@@ -1,0 +1,14 @@
+#!/bin/bash
+
+start=$(date +%s.%N)
+
+if "$1"; then
+    dur=$(echo "$(date +%s.%N) - $start" | bc)
+    echo -e "\nProcess returned \033[0;32m0\033[0m.\nExecution time: $dur seconds."
+else
+    ERROR_CODE=$?
+    dur=$(echo "$(date +%s.%N) - $start" | bc)
+    echo -e "\nProcess returned the error code \033[0;31m$ERROR_CODE\033[0m.\nExecution time: $dur 
+seconds."
+fi
+read junk
