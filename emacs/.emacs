@@ -106,15 +106,39 @@
 
 ;; I-search and query-replace
 (global-set-key (kbd "C-f") 'isearch-forward)
-(global-set-key (kbd "C-h") 'query-replace)
+
+(defun my/query-replace (from-string to-string &optional delimited start end)
+  "Replace some occurrences of FROM-STRING with TO-STRING.  As each match is
+found, the user must type a character saying what to do with it. This is a
+modified version of the standard `query-replace' function in `replace.el',
+This modified version defaults to operating on the entire buffer instead of
+working only from POINT to the end of the buffer. For more information, see
+the documentation of `query-replace'"
+  (interactive
+   (let ((common
+	  (query-replace-read-args
+	   (concat "Query replace"
+		   (if current-prefix-arg " word" "")
+		   (if (and transient-mark-mode mark-active) " in region" ""))
+	   nil)))
+     (list (nth 0 common) (nth 1 common) (nth 2 common)
+	   (if (and transient-mark-mode mark-active)
+	       (region-beginning)
+	     (buffer-end -1))
+	   (if (and transient-mark-mode mark-active)
+	       (region-end)
+	     (buffer-end 1)))))
+  (perform-replace from-string to-string t nil delimited nil nil start end))
+
+(global-set-key (kbd "C-h") 'my/query-replace)
 
 (defun replace-all-ocurrences (FromString ToString)
   "Replace a string without moving point."
   (interactive "sReplace: \nsReplace: %s  With: ")
-  (progn
+  (save-excursion
     (beginning-of-buffer)
-    (save-excursion (replace-string FromString ToString)))
-  )
+    (replace-string FromString ToString)))
+
 (global-set-key (kbd "C-S-h") 'replace-all-ocurrences)
 
 (add-hook 'isearch-mode-hook
