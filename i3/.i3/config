@@ -41,8 +41,10 @@ bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu='dmenu -i -fn "Deja
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
 ################################################################################################
 
-# TODO: Investigate what is it.
-exec --no-startup-id volumeicon
+# All of them update i3blocks icon by sending a signal to it.
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%; exec pkill -SIGRTMIN+12 i3blocks 
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%; exec pkill -SIGRTMIN+12 i3blocks
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle; exec pkill -SIGRTMIN+12 i3blocks
 
 # TODO: Mayby change the key later. 
 bindsym $mod+Ctrl+m exec i3-sensible-terminal -e 'alsamixer'
@@ -101,7 +103,7 @@ bindsym $mod+e layout toggle split
 bindsym $mod+Shift+space exec ~/.i3/toggle-floating.sh
 
 # change focus between tiling / floating windows
-bindsym $mod+space focus mode_toggle
+bindsym $mod+ace focus mode_toggle
 
 # focus the parent container
 bindsym $mod+a focus parent
@@ -109,6 +111,7 @@ bindsym $mod+a focus parent
 # focus the parent container
 bindsym $mod+z focus child
 
+bindsym $mod+m exec ~/work/dmenu-music-player/start-dmus
 # Workspace names
 # to display names or symbols instead of plain workspace numbers you can use
 # something like: set $ws1 1:mail
@@ -182,37 +185,6 @@ exec --no-startup-id compton --backend glx --paint-on-overlay --glx-no-stencil -
 exec --no-startup-id nm-applet
 exec --no-startup-id xautolock -time 10 -locker i3lock-fancy
 exec --no-startup-id feh --bg-fill ~/Pictures/wallpaper.png --no-fehbg
-
-# Color palette used or the terminal ( ~/.Xresources file )
-# Colors are gathered based on the documentation:
-# https://i3wm.org/docs/userguide.html#xresources
-# Change the variable name at the place you want to match the color
-# of your terminal like this:
-# [example]
-# If you want your bar to have the same background color as your 
-# terminal background change the line 362 from:
-# background #14191D
-# to:
-# background $term_background
-# Same logic applied to everything else.
-# set_from_resource $term_background background
-# set_from_resource $term_foreground foreground
-# set_from_resource $term_color0     color0
-# set_from_resource $term_color1     color1
-# set_from_resource $term_color2     color2
-# set_from_resource $term_color3     color3
-# set_from_resource $term_color4     color4
-# set_from_resource $term_color5     color5
-# set_from_resource $term_color6     color6
-# set_from_resource $term_color7     color7
-# set_from_resource $term_color8     color8
-# set_from_resource $term_color9     color9
-# set_from_resource $term_color10    color10
-# set_from_resource $term_color11    color11
-# set_from_resource $term_color12    color12
-# set_from_resource $term_color13    color13
-# set_from_resource $term_color14    color14
-# set_from_resource $term_color15    color15
 
 ## Monokai config theme.
 set $bg-color            #272822
