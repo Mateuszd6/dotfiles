@@ -10,6 +10,11 @@ if [[ $PWD = $HOME ]]; then
     exit 1
 fi
 
+## BAHS STUFF:
+rm -rf ./bash/
+mkdir -p ./bash/
+cp -r ~/.bashrc ./bash/.bashrc
+
 ## EMACS STUFF:
 package_list=`cat ./emacs/repo-packages-list`
 rm -rf ./emacs/
