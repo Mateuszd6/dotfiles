@@ -41,7 +41,7 @@
 
 ;; Show line numbers.
 (add-hook 'prog-mode-hook 'linum-mode)
-(setq linum-format "%4d\u2502 ")
+(setq linum-format "%4d  ") ;; \u2502
 
 ;;; Use ivy.
 (ivy-mode 1)
@@ -49,8 +49,24 @@
 (setq enable-recursive-minibuffers t)
 
 ;; Use cua-mode:
-(cua-mode t)
-(setq cua-keep-region-after-copy t) ; Standard Windows behaviour
+;; (cua-mode t)
+;; (setq cua-keep-region-after-copy t) ; Standard Windows behaviour
+
+;; HACK: This crazy thing makes me able to use C-x binding more
+;; fluently because emacs desn't wait for the rest of the command, as
+;; there is only one command starting by C-t. However emacs
+;; suggestions about the keyboard shortucuts will be probobly wrong.
+;; (keyboard-translate ?\C-t ?\C-x)
+;; (keyboard-translate ?\C-x ?\C-t)
+;; (keyboard-translate ?\C-\\ ?\C-c)
+;; (keyboard-translate ?\C-c ?\C-\\
+
+(global-set-key (kbd "C-x") 'kill-region)
+(global-set-key (kbd "C-c") 'copy-region-as-kill)
+(global-set-key (kbd "C-v") 'yank)
+(global-set-key (kbd "M-v") 'yank-pop)
+;; (global-set-key (kbd "C-S-q") 'save-buffers-kill-emacs)
+(global-set-key (kbd "C-z") 'undo)
 
 ;; Replace cursor with this fancy mode:
 (load "cursor-chg")
@@ -96,11 +112,6 @@
 ;;          KEYBINDINGS         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Use replace+ library.
-(load "replace+")
-(setq-default search/replace-region-as-default-flag t)
-(setq-default search/replace-2nd-sel-as-default-flag t)
-
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "M-w") 'other-window)
 
@@ -108,12 +119,13 @@
 (global-set-key (kbd "C-f") 'isearch-forward)
 
 (defun my/query-replace (from-string to-string &optional delimited start end)
-  "Replace some occurrences of FROM-STRING with TO-STRING.  As each match is
-found, the user must type a character saying what to do with it. This is a
-modified version of the standard `query-replace' function in `replace.el',
-This modified version defaults to operating on the entire buffer instead of
-working only from POINT to the end of the buffer. For more information, see
-the documentation of `query-replace'"
+  "Replace some occurrences of FROM-STRING with TO-STRING.  As
+each match is found, the user must type a character saying what
+to do with it. This is a modified version of the standard
+`query-replace' function in `replace.el', This modified version
+defaults to operating on the entire buffer instead of working
+only from POINT to the end of the buffer. For more information,
+see the documentation of `query-replace'"
   (interactive
    (let ((common
 	  (query-replace-read-args
@@ -130,16 +142,32 @@ the documentation of `query-replace'"
 	     (buffer-end 1)))))
   (perform-replace from-string to-string t nil delimited nil nil start end))
 
+(defun my/query-replace-regexp (regexp to-string &optional delimited start end)
+  "Replace some things after point matching REGEXP with TO-STRING.  As each
+match is found, the user must type a character saying what to do with
+it. This is a modified version of the standard `query-replace-regexp'
+function in `replace.el', This modified version defaults to operating on the
+entire buffer instead of working only from POINT to the end of the
+buffer. For more information, see the documentation of `query-replace-regexp'"
+  (interactive
+   (let ((common
+      (query-replace-read-args
+       (concat "Query replace"
+           (if current-prefix-arg " word" "")
+           " regexp"
+           (if (and transient-mark-mode mark-active) " in region" ""))
+       t)))
+     (list (nth 0 common) (nth 1 common) (nth 2 common)
+       (if (and transient-mark-mode mark-active)
+           (region-beginning)
+         (buffer-end -1))
+       (if (and transient-mark-mode mark-active)
+           (region-end)
+         (buffer-end 1)))))
+  (perform-replace regexp to-string t t delimited nil nil start end))
+
 (global-set-key (kbd "C-h") 'my/query-replace)
-
-(defun replace-all-ocurrences (FromString ToString)
-  "Replace a string without moving point."
-  (interactive "sReplace: \nsReplace: %s  With: ")
-  (save-excursion
-    (beginning-of-buffer)
-    (replace-string FromString ToString)))
-
-(global-set-key (kbd "C-S-h") 'replace-all-ocurrences)
+(global-set-key (kbd "C-S-H") 'my/query-replace-regexp)
 
 (add-hook 'isearch-mode-hook
 	  (function
@@ -161,7 +189,8 @@ the documentation of `query-replace'"
 (global-set-key (kbd "<C-tab>") 'switch-to-buffer)
 (global-set-key (kbd "<C-iso-lefttab>") 'switch-to-buffer-other-window)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
-(global-set-key (kbd "C-w") 'kill-this-buffer)
+(global-set-key (kbd "C-k") 'kill-this-buffer)
+(global-set-key (kbd "M-k") 'kill-buffer-and-window)
 
 ;; Shortcuts for moving stuff around.
 (require 'drag-stuff)
@@ -175,6 +204,9 @@ the documentation of `query-replace'"
 (global-set-key (kbd "<f7>") 'flycheck-next-error)
 (global-set-key (kbd "S-<f7>") 'flycheck-previous-error)
 
+(global-set-key (kbd "C-e") 'move-end-of-line)
+(global-set-key (kbd "C-q") 'move-beginning-of-line)
+
 ;; Commenting lines and blocks:
 (global-set-key (kbd "C-/") 'comment-line)
 (global-set-key (kbd "C-?") 'comment-box)
@@ -184,7 +216,7 @@ the documentation of `query-replace'"
 (global-set-key (kbd "C-=") 'er/expand-region)
 
 ;; Quick calc:
-(global-set-key (kbd "M-k") 'quick-calc)
+(global-set-key (kbd "M-S-c") 'quick-calc)
 
 ;; Multiple cursor support:
 (global-set-key (kbd "C-d") 'mc/mark-next-like-this)
@@ -238,6 +270,83 @@ the documentation of `query-replace'"
 (setq-default browse-url-browser-function 'browse-url-firefox)
 (global-set-key (kbd "M-p") 'search-in-internet)
 
+;; NOTE: supported languages so far:
+;;       * C
+;;       * C++
+(defun get-default-command-based-file-language (compiled-file-name)
+  "Given a file try to guess the best command to compile it. Note that
+it doesn't have to work great and in most cases it's best just to
+create a makefile and run it if the project is more than one file."
+  (setq language (file-name-extension compiled-file-name))
+  (cond
+   ;; C
+   ((string= language "c")
+    (concat (concat (concat
+		     "gcc -Wall -Wextra -Wshadow --std=c11 -o " 
+		     (concat (file-name-directory compiled-file-name) (file-name-base compiled-file-name)))
+		    " ")
+	    compiled-file-name))
+   ;; C++
+   ((string= language "cpp")
+    (concat (concat (concat
+		     "g++ -Wall -Wextra -Wshadow --std=c++11 -o " 
+		     (concat (file-name-directory compiled-file-name) (file-name-base compiled-file-name)))
+		    " ")
+	    compiled-file-name))
+   ;; This is a default case:
+   (1 "make -e")))
+
+(defun guess-command-compile-file ()
+  (interactive)
+  (setq make-dir (get-makefile-dir))
+  (if make-dir (setq compile-command (concat (concat "pushd " make-dir) " && make ; popd"))
+    (setq compile-command (get-default-command-based-file-language buffer-file-name)))
+  (setq compiled-buffer (file-name-base buffer-file-name))
+  (call-interactively 'compile))
+
+(defun get-makefile-dir (&optional startdir)
+  "Move up directories until we find a makefile. If we manage to find
+  it, return the containing directory. Else if we get to the toplevel
+  directory and still can't find it, return nil. Start at startdir or
+  . if startdir not given"
+  (interactive)
+  (let ((dirname (expand-file-name
+		  (if startdir startdir ".")))
+	(found nil) ; found is set as a flag to leave loop if we find it
+	(top nil))  ; top is set when we get
+    (while (not (or found top)) ; If we're at / set top flag.
+      (if (string= (expand-file-name dirname) "/")
+	  (setq top t))		
+      (if (file-exists-p (expand-file-name "makefile" dirname)) ; Check for the file
+	  (setq found t)
+	(setq dirname (expand-file-name ".." dirname)))) ; If not, move up a directory
+    (if found dirname nil)))
+
+;; Very fancy and completly usless eshel prompt.
+(defmacro with-face (str &rest properties)
+    `(propertize ,str 'face (list ,@properties)))
+
+(defun shk-eshell-prompt ()
+  (let ((header-bg "#fff"))
+    (concat
+     (with-face (concat (eshell/pwd) " ") :background header-bg)
+     (with-face (format-time-string "(%Y-%m-%d %H:%M) " (current-time))
+		:background header-bg :foreground "#888")
+     (with-face
+      (or (ignore-errors (format "(%s)"
+				 (vc-responsible-backend default-directory))) "")
+      :background header-bg)
+     (with-face "\n" :background header-bg)
+     (with-face user-login-name :foreground "blue")
+     "@"
+     (with-face "localhost" :foreground "green")
+     (if (= (user-uid) 0)
+	 (with-face " #" :foreground "red")
+       " $")
+     " ")))
+(setq eshell-prompt-function 'shk-eshell-prompt)
+(setq eshell-highlight-prompt nil)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            C/C++             ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -257,7 +366,6 @@ the documentation of `query-replace'"
 
 ;; This is a fix because C-d shortcut seems to be overriten in c-mode.
 ;; (define-key c-mode-map "\C-d/" 'mc/mark-next-like-this))
-
 (defun my-c-fix-hook ()
   (define-key c-mode-map "\C-d" 'mc/mark-next-like-this))
 (add-hook 'c-mode-hook 'my-c-fix-hook)
@@ -267,9 +375,9 @@ the documentation of `query-replace'"
 (add-hook 'c++-mode-hook 'my-c++-fix-hook)
 
 ;; Highlight operatoras for C/C++ modes. Not sure if i like this.
-;; (add-hook 'c-mode-hook 'highlight-operators-mode)
-;; (add-hook 'c++-mode-hook 'highlight-operator-mode)
-;; (add-hook 'objc-mode-hook 'highlight-operator-mode)
+(add-hook 'c-mode-hook 'highlight-operators-mode)
+(add-hook 'c++-mode-hook 'highlight-operator-mode)
+(add-hook 'objc-mode-hook 'highlight-operator-mode)
 
 (add-hook 'c++-mode-hook 'irony-mode)
 (add-hook 'c-mode-hook 'irony-mode)
@@ -302,47 +410,28 @@ the documentation of `query-replace'"
 
 ;; The name of currently compiled buffer and a shell program will
 ;; execute if compilation has succeded.
-(setq cpp-compiled-buffer "No buffer selected!")
+(setq compiled-buffer "No-buffer-selected!")
 
-;; Don't let user specify compile command, just use the default.
-(setq compilation-read-command nil)
-
-(add-hook 'c-mode-hook
-          (lambda ()
-	    (progn
-	      (setq cpp-compiled-buffer (file-name-base buffer-file-name))
-	      (set (make-local-variable 'compile-command)
-		   (concat (concat (concat
-				    "gcc -Wall -Wextra -Wshadow --std=c11 -o " 
-				    (file-name-base buffer-file-name))
-				   " ")
-			   buffer-file-name)))))
-
-(add-hook 'c++-mode-hook
-          (lambda ()
-	    (progn
-	      (setq cpp-compiled-buffer (file-name-base buffer-file-name))
-	      (set (make-local-variable 'compile-command)
-		   (concat (concat (concat
-				    "g++ -Wall -Wextra -Wshadow --std=c++11 -o " 
-				    (file-name-base buffer-file-name))
-				   " ")
-			   buffer-file-name)))))
-
-(defun notify-compilation-result(buffer msg)
-  "Notify that the compilation is finished,
-close the *compilation* buffer if the compilation is successful,
-and set the focus back to Emacs frame"
+(defun run-compiled-program(buffer msg)
+  "If compilation has finished run program in a separated
+terminal. Note that it starts separated terminal, because emacs
+integrated terminal is at least not the best..."
   (if (string-match "^finished" msg)
-      (progn
-	(shell-command (concat
+      (with-temp-buffer
+	(call-process-shell-command (concat
 			"gnome-terminal -- ~/run-console-program.sh ./"
-			cpp-compiled-buffer))
-	;; (tooltip-show "\n Compilation Failed :-( \n ")
-	)))
+			compiled-buffer))
+	t)))
 
-(add-to-list 'compilation-finish-functions
-	     'notify-compilation-result)
+(add-hook 'c-mode-hook (lambda ()
+			 (add-to-list 'compilation-finish-functions
+				      'run-compiled-program)))
+
+(add-hook 'c++-mode-hook (lambda ()
+			 (add-to-list 'compilation-finish-functions
+				      'run-compiled-program)))
+
+(global-set-key (kbd "C-b") 'guess-command-compile-file)
 
 (with-eval-after-load "company-autoloads"
   (global-company-mode 1)
@@ -381,7 +470,7 @@ and set the focus back to Emacs frame"
     ("53f97243218e8be82ba035ae34c024fd2d2e4de29dc6923e026d5580c77ff702" default)))
  '(package-selected-packages
    (quote
-    (multiple-cursors expand-region highlight-parentheses autopair highlight-operators highlight-numbers dumb-jump flycheck company-irony-c-headers company-irony company auto-complete irony drag-stuff monokai-theme ivy))))
+    (magit multiple-cursors expand-region highlight-parentheses autopair highlight-operators highlight-numbers dumb-jump flycheck company-irony-c-headers company-irony company auto-complete irony drag-stuff monokai-theme ivy))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
