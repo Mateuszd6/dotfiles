@@ -1,5 +1,5 @@
-;; My emacs config with lot of features taken from more 'modern'
-;; editors. Currently supports only C/C++ languages.
+;; My emacs config with lot of features taken from more
+;; 'modern'editors. Currently supports only C/C++ languages.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            GLOBAL            ;;
@@ -9,6 +9,10 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
 (package-initialize)
+
+;; Some use package stuff that seems to be important...
+(eval-when-compile
+  (require 'use-package))
 
 ;; Add a path to manually installed packages.
 (add-to-list 'load-path "~/.emacs.d/lisp/")
@@ -27,6 +31,9 @@
       kept-new-versions 6
       kept-old-versions 2
       version-control t)
+
+;; Very important for me, I'm very used to this behaviour.
+(delete-selection-mode t)
 
 ;; Hide menu bar, tool bar and scorll bars.
 (menu-bar-mode -1)
@@ -47,26 +54,6 @@
 (ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
 (setq enable-recursive-minibuffers t)
-
-;; Use cua-mode:
-;; (cua-mode t)
-;; (setq cua-keep-region-after-copy t) ; Standard Windows behaviour
-
-;; HACK: This crazy thing makes me able to use C-x binding more
-;; fluently because emacs desn't wait for the rest of the command, as
-;; there is only one command starting by C-t. However emacs
-;; suggestions about the keyboard shortucuts will be probobly wrong.
-;; (keyboard-translate ?\C-t ?\C-x)
-;; (keyboard-translate ?\C-x ?\C-t)
-;; (keyboard-translate ?\C-\\ ?\C-c)
-;; (keyboard-translate ?\C-c ?\C-\\
-
-(global-set-key (kbd "C-x") 'kill-region)
-(global-set-key (kbd "C-c") 'copy-region-as-kill)
-(global-set-key (kbd "C-v") 'yank)
-(global-set-key (kbd "M-v") 'yank-pop)
-;; (global-set-key (kbd "C-S-q") 'save-buffers-kill-emacs)
-(global-set-key (kbd "C-z") 'undo)
 
 ;; Replace cursor with this fancy mode:
 (load "cursor-chg")
@@ -102,18 +89,63 @@
 			(hl-paren-color-update)))))))
 
 ;; Enable autopair in all buffers
-(autopair-global-mode) 
+(autopair-global-mode)
 
 ;; Use company-mode.
 (add-hook 'after-init-hook 'global-company-mode)
-(global-set-key (kbd "C-SPC") 'company-complete) 
+
+(with-eval-after-load "company-autoloads"
+  (global-company-mode 1)
+  (setq company-tooltip-limit 20
+        company-minimum-prefix-length 1
+        company-echo-delay 0
+        company-begin-commands '(self-insert-command
+                                 c-electric-lt-gt c-electric-colon
+                                 completion-separator-self-insert-command)
+        company-idle-delay 0
+        company-show-numbers t
+        company-tooltip-align-annotations t)
+  (setq company-selection-wrap-around t))
+
+(use-package company-insert-selected
+  :bind (:map company-active-map
+	      ("TAB" . company-simple-complete-next)
+	      ("<tab>" . company-simple-complete-next)
+	      ("<S-tab>" . company-simple-complete-previous)
+	      ("<backtab>" . company-simple-complete-previous)))
+
+;; (global-set-key (kbd "C-SPC") 'company-complete) 
+
+;; Bright-red TODO's
+ (setq fixme-modes '(prog-mode))
+ (make-face 'font-lock-fixme-face)
+ (make-face 'font-lock-note-face)
+ (mapc (lambda (mode)
+	 (font-lock-add-keywords
+	  mode
+	  '(("\\<\\(TODO\\|IMPORTANT\\|BUG\\):" 1 'font-lock-fixme-face t)
+            ("\\<\\(NOTE\\|HACK\\):" 1 'font-lock-note-face t))))
+	fixme-modes)
+ (modify-face 'font-lock-fixme-face "Red" nil nil t nil t nil nil)
+ (modify-face 'font-lock-note-face "Dark Green" nil nil t nil t nil nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          KEYBINDINGS         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(global-set-key (kbd "C-x") 'kill-region)
+(global-set-key (kbd "C-c") 'copy-region-as-kill)
+(global-unset-key (kbd "C-w"))
+(global-set-key (kbd "C-v") 'yank)
+(global-set-key (kbd "M-v") 'yank-pop)
+(global-set-key (kbd "C-z") 'undo)
+
+(global-set-key (kbd "C-S-q") 'save-buffers-kill-emacs)
+
 (global-set-key (kbd "C-s") 'save-buffer)
-(global-set-key (kbd "M-w") 'other-window)
+(global-set-key (kbd "M-o") 'other-window)
+
+(global-set-key (kbd "<f4>") 'magit-status)
 
 ;; I-search and query-replace
 (global-set-key (kbd "C-f") 'isearch-forward)
@@ -204,8 +236,9 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 (global-set-key (kbd "<f7>") 'flycheck-next-error)
 (global-set-key (kbd "S-<f7>") 'flycheck-previous-error)
 
-(global-set-key (kbd "C-e") 'move-end-of-line)
-(global-set-key (kbd "C-q") 'move-beginning-of-line)
+(global-set-key (kbd "M-e") 'move-end-of-line)
+(global-set-key (kbd "M-w") 'move-beginning-of-line)
+(global-set-key (kbd "M-q") 'fill-paragraph)
 
 ;; Commenting lines and blocks:
 (global-set-key (kbd "C-/") 'comment-line)
@@ -216,7 +249,7 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 (global-set-key (kbd "C-=") 'er/expand-region)
 
 ;; Quick calc:
-(global-set-key (kbd "M-S-c") 'quick-calc)
+(global-set-key (kbd "M-C") 'quick-calc)
 
 ;; Multiple cursor support:
 (global-set-key (kbd "C-d") 'mc/mark-next-like-this)
@@ -432,19 +465,6 @@ integrated terminal is at least not the best..."
 				      'run-compiled-program)))
 
 (global-set-key (kbd "C-b") 'guess-command-compile-file)
-
-(with-eval-after-load "company-autoloads"
-  (global-company-mode 1)
-
-  (setq company-tooltip-limit 20
-        company-minimum-prefix-length 1
-        company-echo-delay 0
-        company-begin-commands '(self-insert-command
-                                 c-electric-lt-gt c-electric-colon
-                                 completion-separator-self-insert-command)
-        company-idle-delay 0.2
-        company-show-numbers t
-        company-tooltip-align-annotations t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          POST INIT           ;;
