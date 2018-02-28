@@ -1,5 +1,6 @@
-;; My emacs config with lot of features taken from more
-;; 'modern'editors. Currently supports only C/C++ languages.
+;; My emacs config with lot of features taken from more 'modern'
+;; editors. Currently supports only C/C++ what emacs supports by
+;; default.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            GLOBAL            ;;
@@ -34,6 +35,11 @@
 
 ;; Very important for me, I'm very used to this behaviour.
 (delete-selection-mode t)
+
+;; ...but I use these as well.
+(global-visible-mark-mode t)
+(transient-mark-mode 0)
+(set-face-attribute 'visible-mark-active nil :background "#00FF00")
 
 ;; Hide menu bar, tool bar and scorll bars.
 (menu-bar-mode -1)
@@ -78,6 +84,7 @@
 (global-highlight-parentheses-mode t)
 
 ;; HACK: Make highlight-parentheses work with autopair
+;; TODO: No it does not work for now... :D
 (add-hook 'highlight-parentheses-mode-hook
           '(lambda ()
              (setq autopair-handle-action-fns
@@ -112,40 +119,72 @@
 	      ("TAB" . company-simple-complete-next)
 	      ("<tab>" . company-simple-complete-next)
 	      ("<S-tab>" . company-simple-complete-previous)
-	      ("<backtab>" . company-simple-complete-previous)))
+	      ("<backtab>" . company-simple-complete-previous)
+	      ("<up>" . nil)
+	      ("<down>" . nil)))
 
-;; (global-set-key (kbd "C-SPC") 'company-complete) 
+;; Add more space for filling a paragraph.
+(setq-default fill-column 90)
 
-;; Bright-red TODO's
- (setq fixme-modes '(prog-mode))
- (make-face 'font-lock-fixme-face)
- (make-face 'font-lock-note-face)
- (mapc (lambda (mode)
-	 (font-lock-add-keywords
-	  mode
-	  '(("\\<\\(TODO\\|IMPORTANT\\|BUG\\):" 1 'font-lock-fixme-face t)
-            ("\\<\\(NOTE\\|HACK\\):" 1 'font-lock-note-face t))))
-	fixme-modes)
- (modify-face 'font-lock-fixme-face "Red" nil nil t nil t nil nil)
- (modify-face 'font-lock-note-face "Dark Green" nil nil t nil t nil nil)
+;; Bright-red TODO:
+(setq fixme-modes '(c-mode c++-mode objc-mode emacs-lisp-mode))
+(make-face 'font-lock-fixme-face)
+(make-face 'font-lock-note-face)
+(mapc (lambda (mode)
+	(font-lock-add-keywords
+	 mode
+	 '(("\\<\\(TODO\\|IMPORTANT\\|BUG\\)" 1 'font-lock-fixme-face t)
+	   ("\\<\\(NOTE\\|HACK\\)" 1 'font-lock-note-face t))))
+      fixme-modes)
+(modify-face 'font-lock-fixme-face "Red" nil nil t nil t nil nil)
+(modify-face 'font-lock-note-face "Dark Green" nil nil t nil t nil nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          KEYBINDINGS         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (global-set-key (kbd "C-x") 'kill-region)
-(global-set-key (kbd "C-c") 'copy-region-as-kill)
+(keyboard-translate ?\C-t ?\C-c)
+(keyboard-translate ?\C-c ?\C-t)
+(global-set-key (kbd "C-t") 'copy-region-as-kill)
 (global-unset-key (kbd "C-w"))
 (global-set-key (kbd "C-v") 'yank)
 (global-set-key (kbd "M-v") 'yank-pop)
 (global-set-key (kbd "C-z") 'undo)
+(global-set-key (kbd "C-S-x") 'kill-whole-line)
+
+(global-set-key (kbd "<escape> <escape> <escape>") 'nil)
+
+(global-set-key (kbd "C-2") 'exchange-point-and-mark)
+(global-set-key (kbd "C-@") 'pop-to-mark-command)
+
+;; Insert new line below current line
+;; and move cursor to new line
+;; it will also indent newline
+(global-set-key (kbd "<C-return>") (lambda ()
+                   (interactive)
+                   (end-of-line)
+                   (newline-and-indent)))
+
+;; Insert new line above current line
+;; and move cursor to previous line (newly inserted line)
+;; it will also indent newline
+(global-set-key (kbd "<C-S-return>") (lambda ()
+                       (interactive)
+                       (beginning-of-line)
+                       (newline-and-indent)
+                       (previous-line)))
 
 (global-set-key (kbd "C-S-q") 'save-buffers-kill-emacs)
 
 (global-set-key (kbd "C-s") 'save-buffer)
-(global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "M-w") 'other-window)
+
 
 (global-set-key (kbd "<f4>") 'magit-status)
+
+(with-eval-after-load 'magit-status
+  (define-key magit-status-mode-map (kbd "M-w") nil))
 
 ;; I-search and query-replace
 (global-set-key (kbd "C-f") 'isearch-forward)
@@ -183,19 +222,19 @@ entire buffer instead of working only from POINT to the end of the
 buffer. For more information, see the documentation of `query-replace-regexp'"
   (interactive
    (let ((common
-      (query-replace-read-args
-       (concat "Query replace"
-           (if current-prefix-arg " word" "")
-           " regexp"
-           (if (and transient-mark-mode mark-active) " in region" ""))
-       t)))
+	  (query-replace-read-args
+	   (concat "Query replace"
+		   (if current-prefix-arg " word" "")
+		   " regexp"
+		   (if (and transient-mark-mode mark-active) " in region" ""))
+	   t)))
      (list (nth 0 common) (nth 1 common) (nth 2 common)
-       (if (and transient-mark-mode mark-active)
-           (region-beginning)
-         (buffer-end -1))
-       (if (and transient-mark-mode mark-active)
-           (region-end)
-         (buffer-end 1)))))
+	   (if (and transient-mark-mode mark-active)
+	       (region-beginning)
+	     (buffer-end -1))
+	   (if (and transient-mark-mode mark-active)
+	       (region-end)
+	     (buffer-end 1)))))
   (perform-replace regexp to-string t t delimited nil nil start end))
 
 (global-set-key (kbd "C-h") 'my/query-replace)
@@ -207,6 +246,7 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 	     (define-key isearch-mode-map "\C-h" 'isearch-mode-help)
 	     (define-key isearch-mode-map "\C-r" 'isearch-toggle-regexp)
 	     (define-key isearch-mode-map "\C-c" 'isearch-toggle-case-fold)
+	     (define-key isearch-mode-map "\C-w" 'isearch-toggle-word)
 	     (define-key isearch-mode-map "\C-f" 'isearch-edit-string)
 	     (define-key isearch-mode-map (kbd "C-n") 'isearch-repeat-forward)
 	     (define-key isearch-mode-map (kbd "C-S-n") 'isearch-repeat-backward))))
@@ -237,10 +277,10 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 (global-set-key (kbd "S-<f7>") 'flycheck-previous-error)
 
 (global-set-key (kbd "M-e") 'move-end-of-line)
-(global-set-key (kbd "M-w") 'move-beginning-of-line)
+;; (global-set-key (kbd "M-w") 'move-beginning-of-line)
 (global-set-key (kbd "M-q") 'fill-paragraph)
 
-;; Commenting lines and blocks:
+;; Commenting and lines blocks:
 (global-set-key (kbd "C-/") 'comment-line)
 (global-set-key (kbd "C-?") 'comment-box)
 
@@ -254,6 +294,10 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 ;; Multiple cursor support:
 (global-set-key (kbd "C-d") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-S-d") 'mc/skip-to-next-like-this)
+
+;; Dumb jump is pretty dumb, but it does it's job pretty well in most
+;; cases anyway.
+(global-set-key (kbd "<f12>") 'dumb-jump-go-other-window)
 
 ;; This makes isearch search text if one is selected.
 (defadvice isearch-mode (around isearch-mode-default-string
@@ -332,10 +376,14 @@ create a makefile and run it if the project is more than one file."
 (defun guess-command-compile-file ()
   (interactive)
   (setq make-dir (get-makefile-dir))
-  (if make-dir (setq compile-command (concat (concat "pushd " make-dir) " && make ; popd"))
+  (if make-dir (setq compile-command (concat (concat "cd " make-dir) " && make"))
     (setq compile-command (get-default-command-based-file-language buffer-file-name)))
-  (setq compiled-buffer (file-name-base buffer-file-name))
+  (setq compiled-buffer
+	(if make-dir (concat make-dir "/bin/program")
+	  (concat "./" (file-name-base buffer-file-name))))
   (call-interactively 'compile))
+
+(global-set-key (kbd "C-b") 'guess-command-compile-file)
 
 (defun get-makefile-dir (&optional startdir)
   "Move up directories until we find a makefile. If we manage to find
@@ -357,7 +405,7 @@ create a makefile and run it if the project is more than one file."
 
 ;; Very fancy and completly usless eshel prompt.
 (defmacro with-face (str &rest properties)
-    `(propertize ,str 'face (list ,@properties)))
+  `(propertize ,str 'face (list ,@properties)))
 
 (defun shk-eshell-prompt ()
   (let ((header-bg "#fff"))
@@ -452,8 +500,8 @@ integrated terminal is at least not the best..."
   (if (string-match "^finished" msg)
       (with-temp-buffer
 	(call-process-shell-command (concat
-			"gnome-terminal -- ~/run-console-program.sh ./"
-			compiled-buffer))
+				     "gnome-terminal -- ~/run-console-program.sh "
+				     compiled-buffer))
 	t)))
 
 (add-hook 'c-mode-hook (lambda ()
@@ -461,11 +509,46 @@ integrated terminal is at least not the best..."
 				      'run-compiled-program)))
 
 (add-hook 'c++-mode-hook (lambda ()
-			 (add-to-list 'compilation-finish-functions
-				      'run-compiled-program)))
+			   (add-to-list 'compilation-finish-functions
+					'run-compiled-program)))
 
-(global-set-key (kbd "C-b") 'guess-command-compile-file)
+(defun casey-find-corresponding-file ()
+  "Find the file that corresponds to this one."
+  (interactive)
+  (setq CorrespondingFileName nil)
+  (setq BaseFileName (file-name-sans-extension buffer-file-name))
+  (if (string-match "\\.c" buffer-file-name)
+      (setq CorrespondingFileName (concat BaseFileName ".h")))
+  (if (string-match "\\.h" buffer-file-name)
+      (if (file-exists-p (concat BaseFileName ".c")) (setq CorrespondingFileName (concat BaseFileName ".c"))
+	(setq CorrespondingFileName (concat BaseFileName ".cpp"))))
+  (if (string-match "\\.hin" buffer-file-name)
+      (setq CorrespondingFileName (concat BaseFileName ".cin")))
+  (if (string-match "\\.cin" buffer-file-name)
+      (setq CorrespondingFileName (concat BaseFileName ".hin")))
+  (if (string-match "\\.cpp" buffer-file-name)
+      (setq CorrespondingFileName (concat BaseFileName ".h")))
+  (if CorrespondingFileName (find-file CorrespondingFileName)
+    (error "Unable to find a corresponding file")))
+(defun casey-find-corresponding-file-other-window ()
+  "Find the file that corresponds to this one."
+  (interactive)
+  (find-file-other-window buffer-file-name)
+  (casey-find-corresponding-file)
+  (other-window -1))
 
+(defun c-find-corresponding-file-hook ()
+  (define-key c-mode-map "\ec" 'casey-find-corresponding-file)
+  (define-key c-mode-map "\eC" 'casey-find-corresponding-file-other-window))
+
+(add-hook 'c-mode-common-hook 'c-find-corresponding-file-hook)
+
+(defun c++-find-corresponding-file-hook ()
+  (define-key c++-mode-map "\ec" 'casey-find-corresponding-file)
+  (define-key c++-mode-map "\eC" 'casey-find-corresponding-file-other-window))
+
+(add-hook 'c++-mode-hook 'c++-find-corresponding-file-hook)
+			    
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          POST INIT           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -488,9 +571,11 @@ integrated terminal is at least not the best..."
  '(custom-safe-themes
    (quote
     ("53f97243218e8be82ba035ae34c024fd2d2e4de29dc6923e026d5580c77ff702" default)))
+ '(jdee-server-dir "/home/mateusz/.emacs.d/jdee-server/target")
  '(package-selected-packages
    (quote
-    (magit multiple-cursors expand-region highlight-parentheses autopair highlight-operators highlight-numbers dumb-jump flycheck company-irony-c-headers company-irony company auto-complete irony drag-stuff monokai-theme ivy))))
+    (visible-mark magit multiple-cursors expand-region highlight-parentheses autopair highlight-operators highlight-numbers dumb-jump flycheck company-irony-c-headers company-irony company auto-complete irony drag-stuff monokai-theme ivy))))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
