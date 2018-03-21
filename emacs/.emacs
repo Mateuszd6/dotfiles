@@ -114,7 +114,7 @@
               ("<down>" . nil)))
 
 ;; Add more space for filling a paragraph.
-(setq-default fill-column 90)
+(setq-default fill-column 80)
 
 ;; Bright-red TODO:
 (setq fixme-modes '(c-mode c++-mode objc-mode emacs-lisp-mode))
@@ -186,13 +186,13 @@ instead of yank command."
     )
   (if (looking-at-p "$")
       (forward-char)
-    (if (looking-at-p "[_a-zA-Z1-9]")
-        (while (and (looking-at-p "[_a-zA-Z1-9]") (not (looking-at-p "$")))
+    (if (looking-at-p "[_a-zA-Z0-9]")
+        (while (and (looking-at-p "[_a-zA-Z0-9]") (not (looking-at-p "$")))
           (forward-char)
           )
       ;; TODO, IDEA: Remove '_' from the next statement so that it is treated as no alpha
       ;; character and as alpha whatever is needed.
-      (while (and (looking-at-p "[^_a-zA-Z1-9\s]") (not (looking-at-p "$")))
+      (while (and (looking-at-p "[^_a-zA-Z0-9\s]") (not (looking-at-p "$")))
         (forward-char)
         )
       )
@@ -207,13 +207,13 @@ instead of yank command."
     )
   (if (looking-back "^" 1)
         (backward-char)
-    (if (looking-back "[_a-zA-Z1-9]" 1)
-        (while (and (looking-back "[_a-zA-Z1-9]" 1) (not (looking-back "^" 1)))
+    (if (looking-back "[_a-zA-Z0-9]" 1)
+        (while (and (looking-back "[_a-zA-Z0-9]" 1) (not (looking-back "^" 1)))
           (backward-char)
           )
       ;; TODO, IDEA: Remove '_' from the next statement so that it is treated as no alpha
       ;; character and as alpha whatever is needed.
-      (while (and (looking-back "[^_a-zA-Z1-9\s]" 1) (not (looking-back "^" 1)))
+      (while (and (looking-back "[^_a-zA-Z0-9\s]" 1) (not (looking-back "^" 1)))
         (backward-char)
         )
       )
@@ -268,16 +268,18 @@ instead of yank command."
 
 (global-set-key (kbd "<C-backspace>") 'mat-ctrl-backspace)
 
-
 (defun mat-save-buffer ()
   "Save the buffer after untabifying it, and deleting trailing whitespaces."
   (interactive)
   (save-excursion
     (save-restriction
-      (widen)
-      (untabify (point-min) (point-max))))
+      ;; Dont untabify when in makefile.
+      (unless (member major-mode '(makefile-gmake-mode))
+        (widen)
+        (untabify (point-min) (point-max)))))
   (delete-trailing-whitespace)
   (save-buffer))
+
 (global-set-key (kbd "C-s") 'mat-save-buffer)
 
 (global-set-key (kbd "C-SPC") 'set-mark-command)
