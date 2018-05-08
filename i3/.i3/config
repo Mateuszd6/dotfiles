@@ -8,8 +8,8 @@ set $mod Mod4
 # workspace_layout tabbed <stacking|tabbed>
 
 # Configure border style <normal|1pixel|pixel xx|none|pixel>
-new_window pixel 1
-new_float normal
+new_window pixel 2 
+new_float normal 
 
 # Hide borders
 hide_edge_borders none
@@ -35,18 +35,20 @@ bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+q kill
 
 # start program launcher
+# bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu='dmenu -i -fn fixed -nb "#1E1F1C"'
 bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu='dmenu -i -fn "DejaVu Sans Mono" -nb "#1E1F1C"'
+bindsym $mod+t exec --no-startup-id /home/mateusz/work/xlib-test/bin/program
 
 ################################################################################################
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
 ################################################################################################
 
 # All of them update i3blocks icon by sending a signal to it.
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%; exec pkill -SIGRTMIN+12 i3blocks 
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%; exec pkill -SIGRTMIN+12 i3blocks
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%; exec pkill -SIGRTMIN+12 i3blocks
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle; exec pkill -SIGRTMIN+12 i3blocks
 
-# TODO: Mayby change the key later. 
+# TODO: Mayby change the key later.
 bindsym $mod+Ctrl+m exec i3-sensible-terminal -e 'alsamixer'
 ################################################################################################
 
@@ -193,7 +195,7 @@ set $text-color          #f3f4f5
 set $inactive-text-color #676767
 set $urgent-bg-color     #E53935
 
-## window colors
+# window colors
 ##                       border              background         text                 indicator
 client.focused          #1e1f1c             #1e1f1c            $text-color          #1e1f1c
 client.unfocused        $inactive-bg-color $inactive-bg-color  $inactive-text-color #1e1f1c
@@ -202,13 +204,13 @@ client.urgent           $urgent-bg-color    $urgent-bg-color   $text-color      
 
 # Start i3bar to display a workspace bar (plus the system information i3status if available)
 bar {
-	# Disable scrolling through workspaces.
-	wheel_up_cmd nop
-	wheel_down_cmd nop
-	
-	status_command i3blocks -c ~/.i3/i3blocks.conf
-	position top
-	colors {
+        # Disable scrolling through workspaces.
+        wheel_up_cmd nop
+        wheel_down_cmd nop
+
+        status_command i3blocks -c ~/.i3/i3blocks.conf
+        position top
+        colors {
                 background $bg-color
                 separator #757575
                 #                  border             background         text

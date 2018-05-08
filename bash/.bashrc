@@ -7,7 +7,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu/gtk-2.0/module
 
 extract () {
     if [ -f $1 ] ; then
-	case $1 in
+        case $1 in
             *.tar.bz2) tar xvjf $1 ;;
             *.tar.gz) tar xvzf $1 ;;
             *.bz2) bunzip2 $1 ;;
@@ -21,7 +21,7 @@ extract () {
             *.7z) 7z x $1 ;;
             *.tar.xz) tar xvfJ $1 ;;
             *) echo "'$1' cannot be extracted.";;
-	esac
+        esac
     else
         echo "'$1' if not a file."
     fi
@@ -38,11 +38,11 @@ git_prompt()
 {
     log_info=$(git branch 2>/dev/null | grep '^*' | colrm 1 2)
     if [ -n "$log_info" ]; then
-	if [ -z "$(git status --porcelain)" ]; then 
-	    echo -e '\e[97;1m'\($log_info\)
-	else
-	    echo -e '\e[91;1m'\($log_info\)
-	fi
+        if [ -z "$(git status --porcelain)" ]; then
+            echo -e '\e[97;1m'\($log_info\)
+        else
+            echo -e '\e[91;1m'\($log_info\)
+        fi
     fi
 }
 
@@ -78,6 +78,12 @@ export BROWSER="firefox"
 export EDITOR="emacs"
 export EMAIL="mateuszd7@gmail.com"
 export NAME="Mateusz Dudzinski"
+
+# TODO: No idea why when I just puts them in the .inputrc file they do not
+# work... So I put them here and there, just in case.
+bind "TAB:menu-complete"
+bind "set show-all-if-ambiguous on"
+bind "set menu-complete-display-prefix on"
 
 ## This code was already here:
 # if [ -f /etc/bashrc ]; then

@@ -35,7 +35,7 @@
 ;; Very important for me, I'm very used to this behaviour.
 (delete-selection-mode t)
 
-(transient-mark-mode t)
+(transient-mark-mode 0)
 
 (global-visible-mark-mode t)
 (set-face-attribute 'visible-mark-active nil :background "#00FF00")
@@ -117,7 +117,7 @@
 (setq-default fill-column 80)
 
 ;; Bright-red TODO:
-(setq fixme-modes '(c-mode c++-mode objc-mode emacs-lisp-mode))
+(setq fixme-modes '(c-mode c++-mode objc-mode emacs-lisp-mode shell-mode python-mode java-mode))
 (make-face 'font-lock-fixme-face)
 (make-face 'font-lock-note-face)
 (mapc (lambda (mode)
@@ -176,6 +176,7 @@ instead of yank command."
 
 (global-set-key (kbd "C-z") 'undo)
 (global-set-key (kbd "C-S-x") 'kill-whole-line)
+
 
 (require 'misc)
 (defun mat-jump-right ()
@@ -261,10 +262,10 @@ instead of yank command."
   (kill-region (mark) (point)))
 
 ;; This makes deleting and word jumping much more normal (Its very similar to VScode)
-(global-set-key (kbd "<C-right>") 'mat-jump-right-unselect)
-(global-set-key (kbd "<C-S-right>") 'mat-jump-right-select)
-(global-set-key (kbd "<C-left>") 'mat-jump-left-unselect)
-(global-set-key (kbd "<C-S-left>") 'mat-jump-left-select)
+;; (global-set-key (kbd "<C-right>") 'mat-jump-right-unselect)
+;; (global-set-key (kbd "<C-S-right>") 'mat-jump-right-select)
+;; (global-set-key (kbd "<C-left>") 'mat-jump-left-unselect)
+;; (global-set-key (kbd "<C-S-left>") 'mat-jump-left-select)
 
 (global-set-key (kbd "<C-backspace>") 'mat-ctrl-backspace)
 
@@ -314,7 +315,9 @@ instead of yank command."
 (with-eval-after-load 'magit-status
   (define-key magit-status-mode-map (kbd "M-w") nil))
 
-;; I-search and query-replace
+;; NOTE: this works in terminal, but not with gui, the second once oposite way!
+;; I-search and query-replace (global-set-key "" 'isearch-forward)
+(global-set-key (kbd "C-/") 'isearch-forward)
 (global-set-key (kbd "C-f") 'isearch-forward)
 
 (defun my/query-replace (from-string to-string &optional delimited start end)
@@ -368,6 +371,8 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 (global-set-key (kbd "C-h") 'my/query-replace)
 (global-set-key (kbd "C-S-H") 'my/query-replace-regexp)
 
+
+;;             (define-key isearch-mode-map "\C-f" 'isearch-edit-string)
 (add-hook 'isearch-mode-hook
           (function
            (lambda ()
@@ -375,7 +380,7 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
              (define-key isearch-mode-map "\C-r" 'isearch-toggle-regexp)
              (define-key isearch-mode-map "\C-c" 'isearch-toggle-case-fold)
              (define-key isearch-mode-map "\C-w" 'isearch-toggle-word)
-             (define-key isearch-mode-map "\C-f" 'isearch-edit-string)
+             (define-key isearch-mode-map (kbd "C-/") 'isearch-edit-string)
              (define-key isearch-mode-map (kbd "C-n") 'isearch-repeat-forward)
              (define-key isearch-mode-map (kbd "C-S-n") 'isearch-repeat-backward))))
 
@@ -386,8 +391,10 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 (global-set-key (kbd "M-l") 'counsel-locate)
 (global-set-key (kbd "M-f") 'find-file)
 (global-set-key (kbd "M-F") 'find-file-other-window)
-(global-set-key (kbd "<C-tab>") 'switch-to-buffer)
-(global-set-key (kbd "<C-iso-lefttab>") 'switch-to-buffer-other-window)
+(global-set-key (kbd "M-R") 'revert-buffer)
+(global-set-key (kbd "<C-o>") 'switch-to-buffer)
+(global-set-key (kbd "<C-S-o>") 'switch-to-buffer-other-window)
+(global-set-key (kbd "<C-tab>") 'indent-region)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (global-set-key (kbd "C-k") 'kill-this-buffer)
 (global-set-key (kbd "M-k") 'kill-buffer-and-window)
@@ -403,16 +410,15 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 
 ;; Shortcuts for moving stuff around.
 (require 'drag-stuff)
-(global-set-key (kbd "M-<up>")   #'drag-stuff-up)
-(global-set-key (kbd "M-<down>") #'drag-stuff-down)
-
-;; Kind of usless IMHO.
-;; (global-set-key (kbd "M-<left>") #'drag-stuff-left)
-;; (global-set-key (kbd "M-<right>") #'drag-stuff-right)
+(global-set-key (kbd "C-M-<up>")   #'drag-stuff-up)
+(global-set-key (kbd "C-M-<down>") #'drag-stuff-down)
+(global-set-key (kbd "C-M-<left>") #'drag-stuff-left)
+(global-set-key (kbd "C-M-<right>") #'drag-stuff-right)
 
 (global-set-key (kbd "<M-left>") 'beginning-of-line)
 (global-set-key (kbd "<M-right>") 'end-of-line)
-
+(global-set-key (kbd "<M-down>") 'scroll-up-command)
+(global-set-key (kbd "<M-up>") 'scroll-down-command)
 
 (global-set-key (kbd "<f8>") 'next-error)
 (global-set-key (kbd "S-<f8>") 'previous-error)
@@ -427,8 +433,8 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 (global-set-key (kbd "M-q") 'fill-paragraph)
 
 ;; Commenting and lines blocks:
-(global-set-key (kbd "C-/") 'comment-line)
-(global-set-key (kbd "C-?") 'comment-box)
+;; (global-set-key (kbd "C-/") 'comment-line)
+(global-set-key (kbd "C-?") 'comment-line)
 
 ;; Expand region:
 (require 'expand-region)
@@ -557,14 +563,17 @@ create a makefile and run it if the project is more than one file."
 (c-add-style "microsoft"
              '("stroustrup"
                (c-offsets-alist
-                (innamespace . -)
+                (innamespace . +)
                 (inline-open . 0)
                 (inher-cont . c-lineup-multi-inher)
                 (arglist-cont-nonempty . +)
-                (template-args-cont . +))))
+                (template-args-cont . +)
+                (c-set-offset 'case-label '+))))
 
-(setq c-default-style "microsoft"
+(setq c-default-style "linux"
       c-basic-offset 4)
+
+(c-set-offset 'case-label '+)
 
 ;; This is a fix because C-d shortcut seems to be overriten in c-mode.
 ;; (define-key c-mode-map "\C-d/" 'mc/mark-next-like-this))
@@ -577,6 +586,36 @@ create a makefile and run it if the project is more than one file."
             (highlight-operators-mode)
             (local-unset-key (kbd "\C-d"))
             (local-set-key (kbd "\C-d") 'mc/mark-next-like-this)))
+
+(defun my-c-mode-font-lock-if0 (limit)
+  (save-restriction
+    (widen)
+    (save-excursion
+      (goto-char (point-min))
+      (let ((depth 0) str start start-depth)
+        (while (re-search-forward "^\\s-*#\\s-*\\(if\\|else\\|endif\\)" limit 'move)
+          (setq str (match-string 1))
+          (if (string= str "if")
+              (progn
+                (setq depth (1+ depth))
+                (when (and (null start) (looking-at "\\s-+0"))
+                  (setq start (match-end 0)
+                        start-depth depth)))
+            (when (and start (= depth start-depth))
+              (c-put-font-lock-face start (match-beginning 0) 'font-lock-comment-face)
+              (setq start nil))
+            (when (string= str "endif")
+              (setq depth (1- depth)))))
+        (when (and start (> depth 0))
+          (c-put-font-lock-face start (point) 'font-lock-comment-face)))))
+  nil)
+
+(defun my-c-mode-common-hook ()
+  (font-lock-add-keywords
+   nil
+   '((my-c-mode-font-lock-if0 (0 font-lock-comment-face prepend))) 'add-to-end))
+
+(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
 
 ;; (defun my-c++-fix-hook ()
 ;;   (define-key c++-mode-map "\C-d" 'mc/mark-next-like-this))
@@ -605,14 +644,17 @@ create a makefile and run it if the project is more than one file."
   '(add-to-list
     'company-backends '(company-irony-c-headers company-irony)))
 
+;; (add-hook 'c++-mode-hook 'flycheck-mode)
+;; (add-hook 'c++-mode-hook (lambda ()
+;;                            (setq flycheck-clang-language-standard "c++11")))
+;; (add-hook 'c-mode-hook 'flycheck-mode)
+;; (add-hook 'c-mode-hook (lambda ()
+;;                          (setq flycheck-clang-language-standard "c11")))
+;; (add-hook 'objc-mode-hook 'flycheck-mode)
+
 ;; Use flycheck for C/C++
-(add-hook 'c++-mode-hook 'flycheck-mode)
-(add-hook 'c++-mode-hook (lambda ()
-                           (setq flycheck-clang-language-standard "c++11")))
-(add-hook 'c-mode-hook 'flycheck-mode)
-(add-hook 'c-mode-hook (lambda ()
-                         (setq flycheck-clang-language-standard "c11")))
-(add-hook 'objc-mode-hook 'flycheck-mode)
+(eval-after-load 'flycheck
+  '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
 
 ;; C/C++ compile command:
 
@@ -627,7 +669,7 @@ integrated terminal is at least not the best..."
   (if (string-match "^finished" msg)
       (with-temp-buffer
         (call-process-shell-command (concat
-                                     "gnome-terminal -- ~/run-console-program.sh "
+                                     "gnome-terminal -- ~/.config/run-console-program.sh "
                                      compiled-buffer))
         t)))
 
@@ -702,7 +744,9 @@ integrated terminal is at least not the best..."
 
 (global-hl-line-mode t)
 (set-face-background 'hl-line "#1e1f1c")
-(split-window-horizontally)
+
+(when (display-graphic-p)
+  (split-window-horizontally))
 
 ;; Some custom stuff, that it's best not to touch.
 (custom-set-variables
@@ -719,7 +763,7 @@ integrated terminal is at least not the best..."
  '(jdee-server-dir "/home/mateusz/.emacs.d/jdee-server/target")
  '(package-selected-packages
    (quote
-    (elpy visible-mark magit multiple-cursors expand-region highlight-parentheses autopair highlight-operators highlight-numbers dumb-jump flycheck company-irony-c-headers company-irony company auto-complete irony drag-stuff monokai-theme ivy))))
+    (cmake-mode realgud tuareg csharp-mode flycheck-irony elpy visible-mark magit multiple-cursors expand-region highlight-parentheses autopair highlight-operators highlight-numbers dumb-jump flycheck company-irony-c-headers company-irony company auto-complete irony drag-stuff monokai-theme ivy))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
