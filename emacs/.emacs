@@ -81,8 +81,8 @@
                   (append
                    (if autopair-handle-action-fns
                        autopair-handle-action-fns
-                     '(autopair-default-handle-action))
-                    '((lambda (action pair pos-before)
+                       '(autopair-default-handle-action))
+                       '((lambda (action pair pos-before)
                         (hl-paren-color-update)))))))
 
 ;; Enable autopair in all buffers
@@ -111,7 +111,8 @@
               ("<S-tab>" . company-simple-complete-previous)
               ("<backtab>" . company-simple-complete-previous)
               ("<up>" . nil)
-              ("<down>" . nil)))
+              ("<down>" . nil)
+              ( "RET". nil)))
 
 ;; Add more space for filling a paragraph.
 (setq-default fill-column 80)
@@ -137,6 +138,11 @@
 (keyboard-translate ?\C-c ?\C-t)
 (keyboard-translate ?\C-x ?\C-y)
 (keyboard-translate ?\C-y ?\C-x)
+
+;; (define-key key-translation-map [?\C-t] [?\C-c])
+;; (define-key key-translation-map [?\C-c] [?\C-t])
+;; (define-key key-translation-map [?\C-x] [?\C-y])
+;; (define-key key-translation-map [?\C-y] [?\C-x])
 
 (global-set-key (kbd "C-y") 'kill-region)
 (global-set-key (kbd "C-t") 'copy-region-as-kill)
@@ -191,8 +197,8 @@ instead of yank command."
         (while (and (looking-at-p "[_a-zA-Z0-9]") (not (looking-at-p "$")))
           (forward-char)
           )
-      ;; TODO, IDEA: Remove '_' from the next statement so that it is treated as no alpha
-      ;; character and as alpha whatever is needed.
+      ;; TODO, IDEA: Remove '_' from the next statement so that it is treated as
+      ;; no alpha character and as alpha whatever is needed.
       (while (and (looking-at-p "[^_a-zA-Z0-9\s]") (not (looking-at-p "$")))
         (forward-char)
         )
@@ -212,8 +218,8 @@ instead of yank command."
         (while (and (looking-back "[_a-zA-Z0-9]" 1) (not (looking-back "^" 1)))
           (backward-char)
           )
-      ;; TODO, IDEA: Remove '_' from the next statement so that it is treated as no alpha
-      ;; character and as alpha whatever is needed.
+      ;; TODO, IDEA: Remove '_' from the next statement so that it is treated as
+      ;; no alpha character and as alpha whatever is needed.
       (while (and (looking-back "[^_a-zA-Z0-9\s]" 1) (not (looking-back "^" 1)))
         (backward-char)
         )
@@ -227,9 +233,7 @@ instead of yank command."
     (progn
       (set-mark-command nil)
       (setq transient-mark-mode '(only . OLDVAL))
-      (setq activate-mark t)
-      )
-    )
+      (setq activate-mark t)))
   (mat-jump-right))
 
 (defun mat-jump-right-unselect ()
@@ -244,9 +248,7 @@ instead of yank command."
     (progn
       (set-mark-command nil)
       (setq transient-mark-mode '(only . OLDVAL))
-      (setq activate-mark t)
-      )
-    )
+      (setq activate-mark t)))
   (mat-jump-left))
 
 (defun mat-jump-left-unselect ()
@@ -304,7 +306,7 @@ instead of yank command."
                        (newline-and-indent)
                        (previous-line)))
 
-(global-set-key (kbd "C-S-q") 'save-buffers-kill-emacs)
+(global-set-key (kbd "M-E") 'save-buffers-kill-emacs)
 
 (global-set-key (kbd "M-w") 'other-window)
 (global-set-key (kbd "<C-prior>") 'switch-to-prev-buffer)
@@ -368,11 +370,8 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
              (buffer-end 1)))))
   (perform-replace regexp to-string t t delimited nil nil start end))
 
-(global-set-key (kbd "C-h") 'my/query-replace)
-(global-set-key (kbd "C-S-H") 'my/query-replace-regexp)
+(global-set-key (kbd "C-r") 'query-replace)
 
-
-;;             (define-key isearch-mode-map "\C-f" 'isearch-edit-string)
 (add-hook 'isearch-mode-hook
           (function
            (lambda ()
@@ -386,18 +385,21 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 
 ;; Goto line:
 (global-set-key (kbd "M-g") 'goto-line)
-
 ;; Files and buffers:
 (global-set-key (kbd "M-l") 'counsel-locate)
 (global-set-key (kbd "M-f") 'find-file)
 (global-set-key (kbd "M-F") 'find-file-other-window)
 (global-set-key (kbd "M-R") 'revert-buffer)
-(global-set-key (kbd "<C-o>") 'switch-to-buffer)
-(global-set-key (kbd "<C-S-o>") 'switch-to-buffer-other-window)
+(global-set-key (kbd "M-b") 'switch-to-buffer)
+(global-set-key (kbd "M-B") 'switch-to-buffer-other-window)
+(global-set-key (kbd "M-s") 'counsel-imenu)
 (global-set-key (kbd "<C-tab>") 'indent-region)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
-(global-set-key (kbd "C-k") 'kill-this-buffer)
-(global-set-key (kbd "M-k") 'kill-buffer-and-window)
+(global-set-key (kbd "C-w") 'backward-kill-word)
+
+(global-set-key (kbd "C-k") 'kill-line)
+(global-set-key (kbd "M-k") 'kill-this-buffer)
+(global-set-key (kbd "M-K") 'kill-buffer-and-window)
 
 ;; NOTE: It works because I never ever split windows, so there are always two on my screen.
 (require 'buffer-move)
@@ -422,26 +424,26 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 
 (global-set-key (kbd "<f8>") 'next-error)
 (global-set-key (kbd "S-<f8>") 'previous-error)
+
+(global-set-key (kbd "M-n") 'next-error)
+(global-set-key (kbd "M-N") 'previous-error)
+
 (global-set-key (kbd "<f7>") 'flycheck-next-error)
 (global-set-key (kbd "S-<f7>") 'flycheck-previous-error)
-
-(global-set-key (kbd "M-r") 'move-end-of-line)
-(global-set-key (kbd "M-e") 'move-beginning-of-line)
-(global-set-key (kbd "C-r") 'move-end-of-line)
-(global-set-key (kbd "C-e") 'move-beginning-of-line)
 
 (global-set-key (kbd "M-q") 'fill-paragraph)
 
 ;; Commenting and lines blocks:
-;; (global-set-key (kbd "C-/") 'comment-line)
-(global-set-key (kbd "C-?") 'comment-line)
+(global-set-key (kbd "C-/") 'comment-line)
+(global-set-key (kbd "C-?") 'comment-box)
 
 ;; Expand region:
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
+(global-set-key (kbd "C-+") 'er/contract-region)
 
 ;; Quick calc:
-(global-set-key (kbd "M-C") 'quick-calc)
+(global-set-key (kbd "M-c") 'quick-calc)
 
 ;; Multiple cursor support:
 (global-set-key (kbd "C-d") 'mc/mark-next-like-this)
@@ -621,7 +623,7 @@ create a makefile and run it if the project is more than one file."
 ;;   (define-key c++-mode-map "\C-d" 'mc/mark-next-like-this))
 ;; (add-hook 'c++-mode-hook 'my-c++-fix-hook)
 
-;; Highlight operatoras for C/C++ modes. Not sure if i like this.
+;; Highlight operatoras for C/C++ modes.
 (add-hook 'c-mode-hook 'highlight-operators-mode)
 
 (add-hook 'objc-mode-hook 'highlight-operator-mode)

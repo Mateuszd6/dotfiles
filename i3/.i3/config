@@ -8,8 +8,8 @@ set $mod Mod4
 # workspace_layout tabbed <stacking|tabbed>
 
 # Configure border style <normal|1pixel|pixel xx|none|pixel>
-new_window pixel 2 
-new_float normal 
+new_window pixel 2
+new_float normal
 
 # Hide borders
 hide_edge_borders none
@@ -33,11 +33,12 @@ bindsym $mod+Return exec i3-sensible-terminal
 
 # kill focused window
 bindsym $mod+Shift+q kill
+bindsym $mod+k kill
 
 # start program launcher
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu='dmenu -i -fn fixed -nb "#1E1F1C"'
-bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu='dmenu -i -fn "DejaVu Sans Mono" -nb "#1E1F1C"'
-bindsym $mod+t exec --no-startup-id /home/mateusz/work/xlib-test/bin/program
+# bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu='dmenu -i -fn "DejaVu Sans Mono" -nb "#1E1F1C"'
+bindsym $mod+d exec --no-startup-id /home/mateusz/work/xlib-test/bin/program --sb \#47196D
 
 ################################################################################################
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
@@ -63,10 +64,10 @@ bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 # focus_follows_mouse no
 
 # change focus
-bindsym $mod+j focus left
-bindsym $mod+k focus down
-bindsym $mod+l focus up
-bindsym $mod+semicolon focus right
+# bindsym $mod+j focus left
+# bindsym $mod+k focus down
+# bindsym $mod+l focus up
+# bindsym $mod+semicolon focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
@@ -105,7 +106,7 @@ bindsym $mod+e layout toggle split
 bindsym $mod+Shift+space exec ~/.i3/toggle-floating.sh
 
 # change focus between tiling / floating windows
-bindsym $mod+ace focus mode_toggle
+bindsym $mod+space focus mode_toggle
 
 # focus the parent container
 bindsym $mod+a focus parent
@@ -113,7 +114,8 @@ bindsym $mod+a focus parent
 # focus the parent container
 bindsym $mod+z focus child
 
-bindsym $mod+m exec ~/work/dmenu-music-player/start-dmus
+# TODO: Change dmenu dummy!
+bindsym $mod+m exec ~/work/dmenu-music-player/start-dmus --dmenu-command=~/work/xlib-test/dmenu-dummy
 # Workspace names
 # to display names or symbols instead of plain workspace numbers you can use
 # something like: set $ws1 1:mail
@@ -154,7 +156,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
 # Open up exit menu
-bindsym $mod+Shift+e exec ~/.i3/i3-exit.sh
+bindsym $mod+Shift+e exec ~/.i3/i3-exit-alt.sh
 
 # Resize window (you can also use the mouse for that)
 bindsym $mod+r mode "resize"

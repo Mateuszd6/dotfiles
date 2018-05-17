@@ -7,7 +7,7 @@ while [ "$select" != "Logout" -a "$select" != "Shut Down" -a "$select" != "Reboo
 done
 
 if [ "$select" = "Logout" ]; then
-    i3-msg exit	
+    i3-msg exit
 elif [ "$select" = "Shut Down" ]; then
     /usr/bin/systemctl poweroff
 elif [ "$select" = "Reboot" ]; then
@@ -19,5 +19,5 @@ elif  [ "$select" = "Hibernate" ]; then
 elif [ "$select" = "Lock" ]; then
     i3lock-fancy
 else
-	echo "Bad commnad."
+        echo "Bad commnad."
 fi

@@ -39,9 +39,9 @@ git_prompt()
     log_info=$(git branch 2>/dev/null | grep '^*' | colrm 1 2)
     if [ -n "$log_info" ]; then
         if [ -z "$(git status --porcelain)" ]; then
-            echo -e '\e[97;1m'\($log_info\)
+            echo -ne "\e[97;1m($log_info) "
         else
-            echo -e '\e[91;1m'\($log_info\)
+            echo -ne "\e[91;1m($log_info) "
         fi
     fi
 }
@@ -51,10 +51,15 @@ alias dir='ls --color=auto'
 alias ls='ls --color=auto'
 alias ll='ls -l --color=auto'
 alias la='ls -a --color=auto'
-alias l='ls -la --color=auto'
 alias pushd='pushd > /dev/null'
 alias popd='popd > /dev/null'
 alias cls='clear'
+alias grep='grep --color'
+alias less='less -R'
+alias mkdir='mkdir -p'
+alias tree='tree -C'
+alias ed='$EDITOR'
+alias vis='$VISUAL'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
@@ -65,22 +70,24 @@ alias ........='cd ../../../../../../..'
 alias .........='cd ../../../../../../../..'
 alias ..........='cd ../../../../../../../../..'
 alias ...........='cd ../../../../../../../../../..'
-alias grep='grep --color'
-alias less='less -R'
-alias mkdir='mkdir -p'
-alias tree='tree -C'
 
 ## Display current directory:
-export PS1=' \e[92;1m\w\e[0m $(git_prompt)\e[0m\n \e[90;1mʎ\e[0m '
+export PS1=' \e[92;1m\w\e[0m $(git_prompt)\e[0m\e[90;1mʎ\e[0m '
 export PS2=' \e[90;1m\e[0m '
 
 export BROWSER="firefox"
-export EDITOR="emacs"
 export EMAIL="mateuszd7@gmail.com"
 export NAME="Mateusz Dudzinski"
 
+# TODO: Differ the defaul deamon and the one-window deamon. Visual should fire
+#       framed emacs if it exists, and editor should start alternative deamon in
+#       the background.
+export ALTERNATE_EDITOR=""
+export EDITOR="emacsclient -t"
+export VISUAL="emacsclient -t"
+
 # TODO: No idea why when I just puts them in the .inputrc file they do not
-# work... So I put them here and there, just in case.
+#       work... So I put them here and there, just in case.
 bind "TAB:menu-complete"
 bind "set show-all-if-ambiguous on"
 bind "set menu-complete-display-prefix on"

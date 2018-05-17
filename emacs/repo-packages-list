@@ -1,1 +1,6 @@
-auto-complete autopair company-irony company-irony-c-headers company drag-stuff dumb-jump expand-region f flycheck highlight-numbers highlight-operators highlight-parentheses irony magit git-commit ghub let-alist magit-popup dash memoize monokai-theme multiple-cursors parent-mode pkg-info epl popup s swiper ivy use-package bind-key visible-mark with-editor async
+auto-complete autopair cmake-mode company-irony company-irony-c-headers csharp-mode drag-stuff dumb-jump\
+ elpy company expand-region f find-file-in-project flycheck-irony flycheck highlight-indentation highligh\
+t-numbers highlight-operators highlight-parentheses irony magit git-commit ghub let-alist magit-popup das\
+h memoize monokai-theme multiple-cursors parent-mode pkg-info epl popup pyvenv realgud loc-changes load-r\
+elative s swiper ivy test-simple tuareg caml use-package bind-key visible-mark with-editor async yasnippe\
+t
