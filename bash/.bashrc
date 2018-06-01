@@ -2,9 +2,10 @@
 LS_COLORS="no=00:fi=00:di=01;94:ln=04;00:pi=40;33:so=40;33:bd=40;33;01:cd=40;33;01:ex=00;93:*.gz=01;95:*.bz2=01;95:*.bz=01;95:*.tz=01;95:*.rpm=01;95:*.zip=01;95:*.cpio=01;95:*.t=93:*.pm=00;36:*.pod=00;36:*.conf=00;33:*.ini=00;33:*.off=00;9"
 export LS_COLORS
 
-# Quiets lots of warnings displayed when starting GTK apps.
+# This quiets LOTS of warnings displayed when starting GTK apps.
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu/gtk-2.0/modules/
 
+# Extract compressed folder, no matter what it is.
 extract () {
     if [ -f $1 ] ; then
         case $1 in
@@ -27,13 +28,13 @@ extract () {
     fi
 }
 
+# Display a path variable in a more pleasent way.
 function path() {
   echo $PATH | tr ':' '\n'
 }
 
-# Does nothing if there is no git in the folder. Otherwise prints
-# the name of the current branch. Color is red if there are changes,
-# white otherwise.
+# Does nothing if there is no git in the folder. Otherwise prints the name of
+# the current branch. Color is red if there are changes, white otherwise.
 git_prompt()
 {
     log_info=$(git branch 2>/dev/null | grep '^*' | colrm 1 2)
@@ -72,8 +73,8 @@ alias ..........='cd ../../../../../../../../..'
 alias ...........='cd ../../../../../../../../../..'
 
 ## Display current directory:
-export PS1=' \e[92;1m\w\e[0m $(git_prompt)\e[0m\e[90;1mʎ\e[0m '
-export PS2=' \e[90;1m\e[0m '
+export PS1='\e[92;1m $(p=~${PWD#$HOME};((${#p}>28)) && echo "...${p:(-25)}" || echo $p) $(git_prompt)\e[0m\e[90;1mʎ\e[0m '
+export PS2=' \e[90;1m  \e[0m '
 
 export BROWSER="firefox"
 export EMAIL="mateuszd7@gmail.com"

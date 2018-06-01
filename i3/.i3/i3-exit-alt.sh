@@ -4,7 +4,7 @@ RUNNING=true
 
 while $RUNNING; do
     SELECT=$(echo -e "Lock\nLogout\nSuspend\nHibernate\nReboot\nShut Down" | \
-                 ~/work/xlib-test/bin/program --dmenu --sb \#c00020)
+                 ~/work/xlib-test/bin/program --dmenu --sb \#930525)
 
     case $SELECT in
         "Logout") i3-msg exit; RUNNING=false ;;

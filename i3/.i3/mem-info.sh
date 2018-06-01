@@ -1,5 +1,5 @@
 #!/bin/bash
-# val=$(awk '/MemT/ {t=$2} /^(MemF|Bu|Ca)/ {f+=$2} END {print (t-f)/t}' 
+# val=$(awk '/MemT/ {t=$2} /^(MemF|Bu|Ca)/ {f+=$2} END {print (t-f)/t}'
 # /proc/meminfo)
 
 # o=`echo '$($(printf "%.2f" $val)*100)' | bc`
@@ -32,3 +32,7 @@ else
     echo "#FFFFFF"
 fi
 
+# Left, right middle mouse button interaction
+case $BLOCK_BUTTON in
+  1|2|3) gnome-system-monitor -r > /dev/null ;;
+esac

@@ -55,10 +55,22 @@
 (add-hook 'prog-mode-hook 'linum-mode)
 (setq linum-format "%4d  ") ;; \u2502
 
-;; Use ivy.
+;;;; Use ivy.
 (ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
 (setq enable-recursive-minibuffers nil)
+
+;;;; EXPERIMENTAL: Use ido instead.
+;; (setq ido-enable-flex-matching t)
+;; (setq ido-everywhere t)
+;; (ido-mode 1)
+;; (flx-isearch-mode)
+;; (flx-ido-mode 1) ; better/faster matching
+;; (setq ido-create-new-buffer 'always) ; don't confirm to create new buffers
+;; (ido-vertical-mode 1)
+;; (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+
+(flx-isearch-mode)                                                         ;;
 
 ;; Use this comment tool replacement for emacs, because defauls are pretty bad.
 (load "newcomment")
@@ -138,6 +150,9 @@
 (keyboard-translate ?\C-c ?\C-t)
 (keyboard-translate ?\C-x ?\C-y)
 (keyboard-translate ?\C-y ?\C-x)
+
+;; (set-keyboard-coding-system nil)
+;; (set-terminal-coding-system nil)
 
 ;; (define-key key-translation-map [?\C-t] [?\C-c])
 ;; (define-key key-translation-map [?\C-c] [?\C-t])
@@ -396,6 +411,7 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 (global-set-key (kbd "<C-tab>") 'indent-region)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (global-set-key (kbd "C-w") 'backward-kill-word)
+(global-set-key (kbd "C-S-w") 'kill-word)
 
 (global-set-key (kbd "C-k") 'kill-line)
 (global-set-key (kbd "M-k") 'kill-this-buffer)
@@ -451,7 +467,8 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 
 ;; Dumb jump is pretty dumb, but it does it's job pretty well in most
 ;; cases anyway.
-(global-set-key (kbd "<f12>") 'dumb-jump-go-other-window)
+(global-set-key (kbd "M-d") 'dumb-jump-go-current-window)
+(global-set-key (kbd "M-D") 'dumb-jump-go-other-window)
 
 ;; This makes isearch search text if one is selected.
 (defadvice isearch-mode (around isearch-mode-default-string
@@ -736,6 +753,13 @@ integrated terminal is at least not the best..."
 (define-key elpy-mode-map (kbd "S-<f7>") 'elpy-flymake-previous-error)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;            ORG MODE          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package org-bullets
+  :init
+  (add-hook 'org-mode-hook #'org-bullets-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          POST INIT           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -765,7 +789,7 @@ integrated terminal is at least not the best..."
  '(jdee-server-dir "/home/mateusz/.emacs.d/jdee-server/target")
  '(package-selected-packages
    (quote
-    (cmake-mode realgud tuareg csharp-mode flycheck-irony elpy visible-mark magit multiple-cursors expand-region highlight-parentheses autopair highlight-operators highlight-numbers dumb-jump flycheck company-irony-c-headers company-irony company auto-complete irony drag-stuff monokai-theme ivy))))
+    (org-bullets flx-isearch flx-ido cmake-mode realgud tuareg csharp-mode flycheck-irony elpy visible-mark magit multiple-cursors expand-region highlight-parentheses autopair highlight-operators highlight-numbers dumb-jump flycheck company-irony-c-headers company-irony company auto-complete irony drag-stuff monokai-theme ivy))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -774,3 +798,4 @@ integrated terminal is at least not the best..."
  ;; If there is more than one, they won't work right.
  )
 (put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)

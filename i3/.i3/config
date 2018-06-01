@@ -38,7 +38,16 @@ bindsym $mod+k kill
 # start program launcher
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu='dmenu -i -fn fixed -nb "#1E1F1C"'
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu='dmenu -i -fn "DejaVu Sans Mono" -nb "#1E1F1C"'
-bindsym $mod+d exec --no-startup-id /home/mateusz/work/xlib-test/bin/program --sb \#47196D
+bindsym $mod+d exec --no-startup-id /home/mateusz/work/xlib-test/bin/program \
+        --sb \#47196D                                                        \
+        --appluncher                                                         \
+        --appluncher-add GIMP gimp-2.8                                       \
+        --appluncher-add XKill xkill                                         \
+        --appluncher-add IntelliJ idea.sh                                    \
+        --appluncher-blacklist "GNU Image Manipulation Program"              \
+        --appluncher-blacklist "IntelliJ IDEA Community Edition"
+
+bindsym $mod+t exec --no-startup-id gnome-system-monitor
 
 ################################################################################################
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
@@ -185,7 +194,15 @@ mode "resize" {
 # Autostart applications
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 # exec --no-startup-id nitrogen --restore; sleep 1;
-exec --no-startup-id compton --backend glx --paint-on-overlay --glx-no-stencil --glx-no-rebind-pixmap --glx-swap-method buffer-age --xrender-sync-fence -b
+
+exec --no-startup-id compton --backend glx \
+     --paint-on-overlay                    \
+     --glx-no-stencil                      \
+     --glx-no-rebind-pixmap                \
+     --glx-swap-method buffer-age          \
+     --xrender-sync-fence                  \
+     -b
+
 exec --no-startup-id nm-applet
 exec --no-startup-id xautolock -time 10 -locker i3lock-fancy
 exec --no-startup-id feh --bg-fill ~/Pictures/wallpaper.png --no-fehbg
@@ -198,7 +215,7 @@ set $inactive-text-color #676767
 set $urgent-bg-color     #E53935
 
 # window colors
-##                       border              background         text                 indicator
+##                      border              background         text                 indicator
 client.focused          #1e1f1c             #1e1f1c            $text-color          #1e1f1c
 client.unfocused        $inactive-bg-color $inactive-bg-color  $inactive-text-color #1e1f1c
 client.focused_inactive $inactive-bg-color $inactive-bg-color  $inactive-text-color #1e1f1c
@@ -209,6 +226,7 @@ bar {
         # Disable scrolling through workspaces.
         wheel_up_cmd nop
         wheel_down_cmd nop
+        tray_output none     # to specify on other bar to not show icons in event of race condition
 
         status_command i3blocks -c ~/.i3/i3blocks.conf
         position top
@@ -220,5 +238,4 @@ bar {
                 inactive_workspace $inactive-bg-color $inactive-bg-color $inactive-text-color
                 urgent_workspace   $urgent-bg-color   $urgent-bg-color   $text-color
         }
-
 }

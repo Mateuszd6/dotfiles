@@ -36,15 +36,21 @@ if [ $SSID != "" ]; then
 
      echo "$QUALITY% $SSID" # full text
      echo "$QUALITY% $SSID" # short text
-     
+
      # color
     if [[ $QUALITY -ge 80 ]]; then
         echo "#00FF00"
     elif [[ $QUALITY -lt 80 ]]; then
-	echo "#FFF600"
+        echo "#FFF600"
     elif [[ $QUALITY -lt 60 ]]; then
-	echo "#FFAE00"
+        echo "#FFAE00"
     elif [[ $QUALITY -lt 40 ]]; then
-	echo "#FF0000"
+        echo "#FF0000"
     fi
 fi
+
+# Left, right middle mouse button interaction
+# TODO: Floating?
+case $BLOCK_BUTTON in
+  1|2|3) nm-connection-editor > /dev/null ;;
+esac
