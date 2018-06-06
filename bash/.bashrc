@@ -47,6 +47,11 @@ git_prompt()
     fi
 }
 
+clear_cache()
+{
+    sudo /bin/sh -c "free && sudo echo 3 > /proc/sys/vm/drop_caches && free"
+}
+
 ## Alias:
 alias dir='ls --color=auto'
 alias ls='ls --color=auto'
