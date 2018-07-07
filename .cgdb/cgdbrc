@@ -1,0 +1,3 @@
+:set winsplitorientation=vertical
+:set executinglinedisplay=highlight
+:set tabstop=4
