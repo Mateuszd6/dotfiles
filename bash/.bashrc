@@ -37,9 +37,15 @@ alias .........='cd ../../../../../../../..'
 alias ..........='cd ../../../../../../../../..'
 alias ...........='cd ../../../../../../../../../..'
 
+dir_prefix() {
+    if [ "${PWD##/home/}" != "${PWD}" ]; then
+        echo "~"
+    fi
+}
+
 
 ## Display current directory:
-export PS1='\e[92;1m $(p=~${PWD#$HOME};((${#p}>28)) && echo "...${p:(-25)}" || echo $p) $(git_prompt)\e[0m\e[90;1mʎ\e[0m '
+export PS1='\e[92;1m $(dir_prefix) $(p=${PWD#$HOME};((${#p}>28)) && echo "...${p:(-25)}" || echo $p) $(git_prompt)\e[0m\e[90;1mʎ\e[0m '
 export PS2=' \e[90;1m  \e[0m '
 
 export BROWSER="firefox"
