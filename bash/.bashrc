@@ -37,12 +37,6 @@ alias .........='cd ../../../../../../../..'
 alias ..........='cd ../../../../../../../../..'
 alias ...........='cd ../../../../../../../../../..'
 
-dir_prefix() {
-    if [ "${PWD##/home/}" != "${PWD}" ]; then
-        echo "~"
-    fi
-}
-
 
 ## Display current directory:
 export PS1='\e[92;1m $(dir_prefix) $(p=${PWD#$HOME};((${#p}>28)) && echo "...${p:(-25)}" || echo $p) $(git_prompt)\e[0m\e[90;1mʎ\e[0m '
@@ -107,6 +101,13 @@ colors() {
 # Display a path variable in a more pleasent way.
 function path() {
     echo $PATH | tr ':' '\n'
+}
+
+# Used by the propt.
+dir_prefix() {
+    if [ "${PWD##/home/}" != "${PWD}" ]; then
+        echo -ne "~"
+    fi
 }
 
 # Does nothing if there is no git in the folder. Otherwise prints the name of
