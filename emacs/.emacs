@@ -56,17 +56,17 @@
 (setq linum-format "%4d  ") ;; \u2502
 
 ;;;; Use ivy.
-(ivy-mode 1)
-(setq ivy-use-virtual-buffers t)
-(setq enable-recursive-minibuffers nil)
+;; (ivy-mode 1)
+;; (setq ivy-use-virtual-buffers t)
+;; (setq enable-recursive-minibuffers nil)
 
 ;;;; EXPERIMENTAL: Use ido instead.
-;; (setq ido-enable-flex-matching t)
-;; (setq ido-everywhere t)
-;; (ido-mode 1)
-;; (flx-isearch-mode)
-;; (flx-ido-mode 1) ; better/faster matching
-;; (setq ido-create-new-buffer 'always) ; don't confirm to create new buffers
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(ido-mode 1)
+(flx-isearch-mode)
+(flx-ido-mode 1) ; better/faster matching
+(setq ido-create-new-buffer 'always) ; don't confirm to create new buffers
 ;; (ido-vertical-mode 1)
 ;; (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 
@@ -453,6 +453,14 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
 (global-set-key (kbd "C-/") 'comment-line)
 (global-set-key (kbd "C-?") 'comment-box)
 
+(global-set-key (kbd "M-.") (lambda ()
+                              (interactive)
+                              (execute-kbd-macro(kbd "->"))))
+
+(global-set-key (kbd "M-SPC") (lambda ()
+                              (interactive)
+                              (execute-kbd-macro(kbd "_"))))
+
 ;; Expand region:
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
@@ -715,7 +723,7 @@ integrated terminal is at least not the best..."
   (if (string-match "\\.cin" buffer-file-name)
       (setq CorrespondingFileName (concat BaseFileName ".hin")))
   (if (string-match "\\.cpp" buffer-file-name)
-      (setq CorrespondingFileName (concat BaseFileName ".h")))
+      (setq CorrespondingFileName (concat BaseFileName ".hpp")))
   (if CorrespondingFileName (find-file CorrespondingFileName)
     (error "Unable to find a corresponding file")))
 (defun casey-find-corresponding-file-other-window ()
@@ -740,17 +748,17 @@ integrated terminal is at least not the best..."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            PYTHON            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(elpy-enable)
+;; (elpy-enable)
 
-(define-key elpy-mode-map (kbd "<C-up>") nil)
-(define-key elpy-mode-map (kbd "<C-down>") nil)
+;; (define-key elpy-mode-map (kbd "<C-up>") nil)
+;; (define-key elpy-mode-map (kbd "<C-down>") nil)
 
-(define-key elpy-mode-map (kbd "<f12>") 'xref-find-definitions)
+;; (define-key elpy-mode-map (kbd "<f12>") 'xref-find-definitions)
 
-(define-key elpy-mode-map (kbd "<f8>") 'elpy-flymake-next-error)
-(define-key elpy-mode-map (kbd "S-<f8>") 'elpy-flymake-previous-error)
-(define-key elpy-mode-map (kbd "<f7>") 'elpy-flymake-next-error)
-(define-key elpy-mode-map (kbd "S-<f7>") 'elpy-flymake-previous-error)
+;; (define-key elpy-mode-map (kbd "<f8>") 'elpy-flymake-next-error)
+;; (define-key elpy-mode-map (kbd "S-<f8>") 'elpy-flymake-previous-error)
+;; (define-key elpy-mode-map (kbd "<f7>") 'elpy-flymake-next-error)
+;; (define-key elpy-mode-map (kbd "S-<f7>") 'elpy-flymake-previous-error)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            ORG MODE          ;;
