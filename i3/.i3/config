@@ -29,7 +29,7 @@ font pango:DejaVu Sans Mono 10
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec /home/mateusz/.i3/urxvt-client-or-deamon.sh
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -37,13 +37,8 @@ bindsym $mod+k kill
 
 # start program launcher
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop --dmenu='dmenu -i -fn "DejaVu Sans Mono" -nb "#1E1F1C"'
-bindsym $mod+d exec --no-startup-id /home/mateusz/work/aluncher/bin/program  \
-        --sb \#47196D                                                        \
-        --appluncher                                                         \
-        --appluncher-add GIMP gimp                                           \
-        --appluncher-add XKill xkill                                         \
-        --appluncher-blacklist "GNU Image Manipulation Program"
-
+bindsym $mod+d exec --no-startup-id /home/mateusz/work/foo/run.sh
+bindsym $mod+c exec --no-startup-id /home/mateusz/work/foo/calc.sh
 bindsym $mod+t exec --no-startup-id gnome-system-monitor
 
 ## Volume control
@@ -73,9 +68,14 @@ set $volumestep 5
 #set $alsacard 1
 
 # Uncomment to use alsa-utils (append "-c $alsacard" without quotes to override default card)
-bindsym XF86AudioRaiseVolume exec ~/.i3/i3-volume/volume -ap -i 5 -t i3blocks -u SIGRTMIN+10
-bindsym XF86AudioLowerVolume exec ~/.i3/i3-volume/volume -ap -d 5 -t i3blocks -u SIGRTMIN+10
-bindsym XF86AudioMute        exec ~/.i3/i3-volume/volume -amp -t i3blocks -u SIGRTMIN+10
+# bindsym XF86AudioRaiseVolume exec "amixer -q sset Master,0 1+ unmute"
+# bindsym XF86AudioLowerVolume exec "amixer -q sset Master,0 1- unmute"
+# bindsym XF86AudioMute exec "amixer -q sset Master,0 toggle"
+
+###
+bindsym XF86AudioRaiseVolume exec ~/.i3/vol-setup.sh -ap -i 5 -t i3blocks -u SIGRTMIN+10
+bindsym XF86AudioLowerVolume exec ~/.i3/vol-setup.sh -ap -d 5 -t i3blocks -u SIGRTMIN+10
+bindsym XF86AudioMute        exec ~/.i3/vol-setup.sh -ap -t i3blocks -u SIGRTMIN+10
 
 # pulseaudio-utils settings when not using alsa-utils
 #
@@ -98,7 +98,7 @@ bindsym $mod+Ctrl+m exec i3-sensible-terminal -e 'alsamixer'
 # bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
 
 # Start Applications
-bindsym Print exec --no-startup-id i3-scrot
+bindsym Print exec --no-startup-id scrot ~/Pictures/Screenshots/%b%d::%H%M%S.png
 bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 
 # focus_follows_mouse no
@@ -195,6 +195,7 @@ bindsym $mod+Shift+r restart
 
 # Open up exit menu
 bindsym $mod+Shift+e exec ~/.i3/i3-exit-alt.sh
+bindsym $mod+b exec ~/work/foo/run.sh
 
 # Resize window (you can also use the mouse for that)
 bindsym $mod+r mode "resize"
@@ -234,7 +235,7 @@ exec --no-startup-id compton --backend glx \
      -b
 
 exec --no-startup-id nm-applet
-exec --no-startup-id xautolock -time 10 -locker i3lock-fancy
+exec --no-startup-id xautolock -time 10 -locker i3lock -i=/home/mateusz/Pictures/wallpaper.png
 exec --no-startup-id feh --bg-fill ~/Pictures/wallpaper.png --no-fehbg
 
 ## Monokai config theme.
