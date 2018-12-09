@@ -153,5 +153,14 @@ clear_cache()
     sudo /bin/sh -c "free && sudo echo 3 > /proc/sys/vm/drop_caches && free"
 }
 
+mateusz-format()
+{
+    for f in *.c *.h *.cpp *.hpp *.cc; do
+        if [ -f $f ] ; then
+            clang-format -style="{BasedOnStyle: llvm, TabWidth: 4, IndentWidth: 4, BreakBeforeBraces: Allman, ColumnLimit: 100}" $f
+        fi
+    done
+}
+
 # TODO: Investigate what this is!
 # xhost +local:root > /dev/null 2>&1
