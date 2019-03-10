@@ -13,6 +13,7 @@ alias dir='ls --color=auto'
 alias ls='ls --color=auto'
 alias ll='ls -l --color=auto'
 alias la='ls -a --color=auto'
+alias gl='git status'
 alias gl='git log --oneline --branches --graph'
 alias pushd='pushd > /dev/null'
 alias popd='popd > /dev/null'
@@ -22,7 +23,7 @@ alias less='less -R'
 alias mkdir='mkdir -p'
 alias tree='tree -C'
 alias df='df -h'                          # human-readable size
-alias du='du -g'                          # human-readable size
+alias du='du -h'                          # human-readable size
 alias free='free -m'                      # show sizes in MB
 alias ed='$EDITOR'
 alias vis='$VISUAL'
@@ -40,7 +41,7 @@ alias ...........='cd ../../../../../../../../../..'
 
 ## Display current directory:
 export PS1='\e[92;1m $(dir_prefix)$(p=${PWD#$HOME};((${#p}>28)) && echo "...${p:(-25)}" || echo $p) $(git_prompt)\e[0m\e[90;1mʎ\e[0m '
-export PS2=' \e[90;1m  \e[0m '
+export PS2=' \e[90;1m  ┋\e[0m '
 
 export BROWSER="firefox"
 export EMAIL="mateuszd7@gmail.com"
@@ -124,6 +125,13 @@ git_prompt()
     fi
 }
 
+repeat_util_fail()
+{
+    while [ $? -eq 0 ]; do
+        $@
+    done
+}
+
 # Extract compressed folder, no matter what it is.
 extract () {
     if [ -f $1 ] ; then
@@ -155,11 +163,27 @@ clear_cache()
 
 mateusz-format()
 {
-    for f in *.c *.h *.cpp *.hpp *.cc; do
+    FORMATED_FILES=0
+    for f in *.c *.h *.cpp *.hpp *.cc ./**/*.c ./**/*.h ./**/*.cpp ./**/*.hpp ./**/*.cc; do
         if [ -f $f ] ; then
-            clang-format -style="{BasedOnStyle: llvm, TabWidth: 4, IndentWidth: 4, BreakBeforeBraces: Allman, ColumnLimit: 100}" $f
+            read -p "Format file $f? [y/N] " -r
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                clang-format -style="{BasedOnStyle: mozilla, TabWidth: 4, IndentWidth: 4, BreakBeforeBraces: Allman, ColumnLimit: 80}" $f -i
+                FORMATED_FILES=$((FORMATED_FILES+1))
+            fi
         fi
     done
+
+    echo "$FORMATED_FILES were formatted."
+}
+
+to-clip()
+{
+    if [ $# -ge 1 ] && ([ $1 == '--remove-newlines' ] || [ $1 == '-rm-nl' ]); then
+        cat | tr -d '\n' | xclip -sel clip
+    else
+        cat | xclip -sel clip
+    fi
 }
 
 # TODO: Investigate what this is!

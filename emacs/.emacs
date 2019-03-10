@@ -321,8 +321,6 @@ instead of yank command."
                        (newline-and-indent)
                        (previous-line)))
 
-(global-set-key (kbd "M-E") 'save-buffers-kill-emacs)
-
 (global-set-key (kbd "M-w") 'other-window)
 (global-set-key (kbd "<C-prior>") 'switch-to-prev-buffer)
 (global-set-key (kbd "<C-next>") 'switch-to-next-buffer)
@@ -577,7 +575,7 @@ create a makefile and run it if the project is more than one file."
     (while (not (or found top)) ; If we're at / set top flag.
       (if (string= (expand-file-name dirname) "/")
           (setq top t))
-      (if (file-exists-p (expand-file-name "makefile" dirname)) ; Check for the file
+      (if (file-exists-p (expand-file-name "Makefile" dirname)) ; Check for the file
           (setq found t)
         (setq dirname (expand-file-name ".." dirname)))) ; If not, move up a directory
     (if found dirname nil)))
@@ -590,14 +588,19 @@ create a makefile and run it if the project is more than one file."
 (c-add-style "microsoft"
              '("stroustrup"
                (c-offsets-alist
-                (innamespace . +)
+                (innamespace . 0)
                 (inline-open . 0)
                 (inher-cont . c-lineup-multi-inher)
                 (arglist-cont-nonempty . +)
                 (template-args-cont . +)
                 (c-set-offset 'case-label '+))))
 
+(c-add-style "mateusz"
+             '("linux" (c-offsets-alist (innamespace 0)
+                                        (c-basic-offset 4))))
+
 (setq c-default-style "linux"
+      innamespace 0
       c-basic-offset 4)
 
 (c-set-offset 'case-label '+)
@@ -744,6 +747,42 @@ integrated terminal is at least not the best..."
   (define-key c++-mode-map "\eC" 'casey-find-corresponding-file-other-window))
 
 (add-hook 'c++-mode-hook 'c++-find-corresponding-file-hook)
+
+(defun c++-add-include-guard ()
+  (interactive)
+  (if (buffer-file-name)
+      (let*
+          ((fName (upcase (file-name-nondirectory
+                           (file-name-sans-extension buffer-file-name))))
+           (ifDef (concat
+                   "#ifndef "
+                   fName
+                   "_H"
+                   "\n#define "
+                   fName
+                   "_H"
+                   "\n"))
+           (begin (point-marker)))
+        (progn
+          (if (< (- (point-max) (point-min)) 5 )
+              (progn
+                (insert "\nclass "
+                        (capitalize fName)
+                        "{\npublic:\n\nprivate:\n\n};\n")
+                (goto-char (point-min))
+                (next-line-nomark 3)
+                (setq begin (point-marker))))
+
+          (goto-char (point-min))
+          (insert ifDef)
+          (goto-char (point-max))
+          (insert "\n#endif" " //" fName "_H")
+          (goto-char begin)))
+    (message (concat
+              "Buffer "
+              (buffer-name)
+              " must have a filename"))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;            PYTHON            ;;

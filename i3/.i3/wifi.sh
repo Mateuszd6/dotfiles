@@ -34,8 +34,8 @@ SSID=$(nmcli -f ACTIVE,SSID dev wifi list | awk '$1=="yes" {print $2}')
 if [ $SSID != "" ]; then
      SSID="($SSID)"
 
-     echo "$QUALITY% $SSID" # full text
-     echo "$QUALITY% $SSID" # short text
+     echo "[]" "$QUALITY% $SSID" # full text
+     echo "[]" "$QUALITY% $SSID" # short text
 
      # color
     if [[ $QUALITY -ge 80 ]]; then

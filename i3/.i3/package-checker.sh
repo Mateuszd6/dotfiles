@@ -4,7 +4,7 @@
 
 full_text="";
 
-full=`yay -Quk | wc -l`
+full=`yaourt -Quk | wc -l`
 repo=`pacman -Quk | wc -l`
 aur=$((full - repo))
 

@@ -158,14 +158,15 @@ bindsym $mod+z focus child
 # to display names or symbols instead of plain workspace numbers you can use
 # something like: set $ws1 1:mail
 #                 set $ws2 2:
-set $ws1 "1: "
-set $ws2 "2: "
-set $ws3 "3: "
-set $ws4 "4: "
-set $ws5 "5: "
-set $ws6 "6: "
-set $ws7 "7: "
-set $ws8 "8: "
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+# 
+set $ws7 "7"
+set $ws8 "8"
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -225,14 +226,14 @@ mode "resize" {
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 # exec --no-startup-id nitrogen --restore; sleep 1;
 
-exec --no-startup-id compton --backend glx \
-     --paint-on-overlay                    \
-     --glx-no-stencil                      \
-     --glx-no-rebind-pixmap                \
-     --glx-swap-method buffer-age          \
-     --xrender-sync-fence                  \
-     --no-fading-openclose                 \
-     -b
+# exec --no-startup-id compton --backend glx \
+#      --paint-on-overlay                    \
+#      --glx-no-stencil                      \
+#      --glx-no-rebind-pixmap                \
+#      --glx-swap-method buffer-age          \
+#      --xrender-sync-fence                  \
+#      --no-fading-openclose                 \
+#      -b
 
 exec --no-startup-id nm-applet
 exec --no-startup-id xautolock -time 10 -locker i3lock -i=/home/mateusz/Pictures/wallpaper.png
