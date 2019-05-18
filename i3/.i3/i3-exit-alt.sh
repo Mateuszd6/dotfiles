@@ -4,12 +4,12 @@ RUNNING=true
 
 while $RUNNING; do
     SELECT=$(echo -e "Lock\nLock the screen\nLogout\nExit the session\nSuspend\nSuspend to ram\nHibernate\nHibernate to disc\nReboot\nRestart the machine\nShut Down\nPower off the machine" |                             \
-                 /home/mateusz/work/foo/program -l 6 -topof 23 -winpad 2 -texthpad 5 -textvpad 3           \
-                                                -mainfn "DejaVu Sans Mono-18"                              \
-                                                -entryfn "DejaVu Sans Mono-12"                             \
-                                                -commfn "DejaVu Sans Mono-8"                               \
-                                                -dmenu -nb \#272822 -nf \#F6F6F6 -sb \#930525 -sf \#F6F6F6 \
-                                                -mc \#1E1F1C -disp-comments)
+                 mdmenu -l 6 -topof 23 -winpad 2 -texthpad 5 -textvpad 3           \
+                        -mainfn "DejaVu Sans Mono-18"                              \
+                        -entryfn "DejaVu Sans Mono-12"                             \
+                        -commfn "DejaVu Sans Mono-8"                               \
+                        -dmenu -nb \#272822 -nf \#F6F6F6 -sb \#930525 -sf \#F6F6F6 \
+                        -mc \#1E1F1C -disp-comments)
 
     case $SELECT in
         "Logout") i3-msg exit; RUNNING=false ;;

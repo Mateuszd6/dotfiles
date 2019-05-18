@@ -35,8 +35,17 @@
 *.color7:       #f8f8f2
 *.color15:      #f9f8f5
 
-URxvt.font: xft:DejaVu Sans Mono:size=10
+Xft.autohint: 0
+Xft.lcdfilter: lcddefault
+Xft.hintstyle: hintslight
+Xft.hinting: 1
+Xft.antialias: 1
+Xft.rgba: rgb
+
+URxvt.font: xft:DejaVu Sans Mono:size=11
 URxvt.scrollBar: false
+
+
 
 !! Keycode fixes for Ctrl+direction in Vim
 URxvt.keysym.C-Up:     \033[1;5A
@@ -46,4 +55,10 @@ URxvt.keysym.C-Left:   \033[1;5D
 URxvt.keysym.C-Prior:  \033[5;5~
 URxvt.keysym.C-Next:   \033[6;5~
 URxvt.keysym.C-Home:   \033[7;5~
-URxvt.keysym.C-End:    \033[8;5
+URxvt.keysym.C-End:    \033[8;5~
+
+URxvt.keysym.C-Tab: \033{
+URxvt.keysym.Control-Shift-ISO_Left_Tab: \033}
+! disable ctrl-shit
+URxvt*iso14755: False
+URxvt*iso14755_52: False

@@ -47,7 +47,7 @@ capability() { # Return "Capture" if the device is a capture device
 }
 
 volume() {
-  amixer -D $MIXER get $SCONTROL $(capability)
+  amixer -M -D $MIXER get $SCONTROL $(capability)
 }
 
 format() {

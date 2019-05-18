@@ -75,7 +75,7 @@ set $volumestep 5
 ###
 bindsym XF86AudioRaiseVolume exec ~/.i3/vol-setup.sh -ap -i 5 -t i3blocks -u SIGRTMIN+10
 bindsym XF86AudioLowerVolume exec ~/.i3/vol-setup.sh -ap -d 5 -t i3blocks -u SIGRTMIN+10
-bindsym XF86AudioMute        exec ~/.i3/vol-setup.sh -am -t i3blocks -u SIGRTMIN+10
+bindsym XF86AudioMute        exec ~/.i3/vol-setup.sh -ap -t i3blocks -u SIGRTMIN+10
 
 # pulseaudio-utils settings when not using alsa-utils
 #
@@ -224,16 +224,16 @@ mode "resize" {
 
 # Autostart applications
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-# exec --no-startup-id nitrogen --restore; sleep 1;
+exec --no-startup-id i3-msg 'workspace $ws2; exec emacs'
 
-# exec --no-startup-id compton --backend glx \
-#      --paint-on-overlay                    \
-#      --glx-no-stencil                      \
-#      --glx-no-rebind-pixmap                \
-#      --glx-swap-method buffer-age          \
-#      --xrender-sync-fence                  \
-#      --no-fading-openclose                 \
-#      -b
+exec --no-startup-id compton -b
+#     --paint-on-overlay                    \
+#     --glx-no-stencil                      \
+#     --glx-no-rebind-pixmap                \
+#     --glx-swap-method buffer-age          \
+#     --xrender-sync-fence                  \
+#     --no-fading-openclose                 \
+#     -b
 
 exec --no-startup-id nm-applet
 exec --no-startup-id xautolock -time 10 -locker i3lock -i=/home/mateusz/Pictures/wallpaper.png

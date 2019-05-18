@@ -8,12 +8,14 @@
 
 [ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
 
+source ~/.config/user-dirs.dirs
+
 ## Alias:
-alias dir='ls --color=auto'
-alias ls='ls --color=auto'
-alias ll='ls -l --color=auto'
-alias la='ls -a --color=auto'
-alias gl='git status'
+alias dir='ls --color'
+alias ls='ls --color'
+alias ll='ls -l --color'
+alias la='ls -a --color'
+alias gs='git status'
 alias gl='git log --oneline --branches --graph'
 alias pushd='pushd > /dev/null'
 alias popd='popd > /dev/null'
@@ -51,11 +53,8 @@ export NAME="Mateusz Dudzinski"
 #       framed emacs if it exists, and editor should start alternative deamon in
 #       the background.
 export ALTERNATE_EDITOR=""
-export EDITOR="emacsclient -t"
-export VISUAL="emacsclient -t"
-
-# This quiets LOTS of warnings displayed when starting GTK apps.
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu/gtk-2.0/modules/
+export EDITOR='emacsclient -nw'
+export VISUAL="emacsclient -nw"
 
 # TODO: No idea why when I just puts them in the .inputrc file they do not
 #       work... So I put them here and there, just in case.
@@ -68,7 +67,6 @@ complete -cf sudo
 shopt -s checkwinsize
 shopt -s expand_aliases
 shopt -s histappend
-
 
 # Display currently used colors in the terminal.
 colors() {
@@ -130,6 +128,12 @@ repeat_util_fail()
     while [ $? -eq 0 ]; do
         $@
     done
+}
+
+is_std_c()
+{
+    cat $1 | grep "This file is part of the GNU C Library." &> /dev/null
+    if [ $? -eq 0 ]; then echo YES; else echo NO; fi
 }
 
 # Extract compressed folder, no matter what it is.

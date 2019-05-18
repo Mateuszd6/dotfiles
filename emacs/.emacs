@@ -53,7 +53,9 @@
 
 ;; Show line numbers.
 (add-hook 'prog-mode-hook 'linum-mode)
-(setq linum-format "%4d  ") ;; \u2502
+(load "linum-highlight-current-line-number")
+(require 'linum-highlight-current-line-number)
+(setq linum-format 'linum-highlight-current-line-number)
 
 ;;;; Use ivy.
 ;; (ivy-mode 1)
@@ -71,6 +73,20 @@
 ;; (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 
 (flx-isearch-mode)                                                         ;;
+
+(load "dired+")
+(require 'dired+)
+
+(defun my-dired-up-dir ()
+  "Go up a directory."
+  (interactive)
+  (let ((current-dir (dired-current-directory)))
+    (find-alternate-file "..")
+    (dired-goto-file current-dir)))
+
+(use-package pcre2el
+  :ensure t
+  :config (pcre-mode))
 
 ;; Use this comment tool replacement for emacs, because defauls are pretty bad.
 (load "newcomment")
@@ -103,6 +119,13 @@
 ;; Use company-mode.
 (add-hook 'after-init-hook 'global-company-mode)
 
+(eval-after-load 'company
+  (lambda ()
+    (set-face-attribute
+     'company-preview
+     nil
+     :background (face-attribute 'company-preview-common :background))))
+
 (with-eval-after-load "company-autoloads"
   (global-company-mode 1)
   (setq company-tooltip-limit 20
@@ -116,15 +139,48 @@
         company-tooltip-align-annotations t)
   (setq company-selection-wrap-around t))
 
-(use-package company-insert-selected
-  :bind (:map company-active-map
-              ("TAB" . company-simple-complete-next)
-              ("<tab>" . company-simple-complete-next)
-              ("<S-tab>" . company-simple-complete-previous)
-              ("<backtab>" . company-simple-complete-previous)
-              ("<up>" . nil)
-              ("<down>" . nil)
-              ( "RET". nil)))
+(global-company-mode)
+(defun my-company-visible-and-explicit-action-p ()
+  (and (company-tooltip-visible-p)
+       (company-explicit-action-p)))
+
+; NOTE: Change 'company-pseudo-tooltip-unless-just-one-frontend-with-delay' to
+;       company-pseudo-tooltip-unless-just-one-frontend' in below to disable
+;       tooltip delay.
+(defun company-ac-setup ()
+  "Sets up `company-mode' to behave similarly to `auto-complete-mode'."
+  (setq company-require-match nil)
+  (setq company-auto-complete #'my-company-visible-and-explicit-action-p)
+  (setq company-frontends '(company-echo-metadata-frontend
+                            company-pseudo-tooltip-unless-just-one-frontend
+                            company-preview-frontend))
+  (define-key company-active-map [tab] 'company-select-next-if-tooltip-visible-or-complete-selection)
+  (define-key company-active-map (kbd "TAB") 'company-select-next-if-tooltip-visible-or-complete-selection)
+  (define-key company-active-map [backtab] 'company-select-previous)
+  (define-key company-active-map (kbd "<S-tab>") 'company-select-previous)
+  (define-key company-active-map (kbd "<down>")
+    (lambda () (interactive)
+      (company-complete-selection)
+      (execute-kbd-macro (kbd "<down>"))))
+  (define-key company-active-map (kbd "<up>")
+    (lambda () (interactive)
+      (company-complete-selection)
+      (execute-kbd-macro (kbd "<up>"))))
+  (define-key company-active-map (kbd "<left>")
+    (lambda () (interactive)
+      (company-complete-selection)
+      (execute-kbd-macro (kbd "<left>"))))
+  (define-key company-active-map (kbd "<right>")
+    (lambda () (interactive)
+      (company-complete-selection)))
+
+  (define-key company-active-map (kbd "<C-right>")
+    (lambda () (interactive)
+      (company-complete-selection)
+      ;(execute-kbd-macro (kbd "<C-right"))
+      )))
+
+(company-ac-setup)
 
 ;; Add more space for filling a paragraph.
 (setq-default fill-column 80)
@@ -150,14 +206,6 @@
 (keyboard-translate ?\C-c ?\C-t)
 (keyboard-translate ?\C-x ?\C-y)
 (keyboard-translate ?\C-y ?\C-x)
-
-;; (set-keyboard-coding-system nil)
-;; (set-terminal-coding-system nil)
-
-;; (define-key key-translation-map [?\C-t] [?\C-c])
-;; (define-key key-translation-map [?\C-c] [?\C-t])
-;; (define-key key-translation-map [?\C-x] [?\C-y])
-;; (define-key key-translation-map [?\C-y] [?\C-x])
 
 (global-set-key (kbd "C-y") 'kill-region)
 (global-set-key (kbd "C-t") 'copy-region-as-kill)
@@ -324,11 +372,10 @@ instead of yank command."
 (global-set-key (kbd "M-w") 'other-window)
 (global-set-key (kbd "<C-prior>") 'switch-to-prev-buffer)
 (global-set-key (kbd "<C-next>") 'switch-to-next-buffer)
-
 (global-set-key (kbd "<f4>") 'magit-status)
 
-(with-eval-after-load 'magit-status
-  (define-key magit-status-mode-map (kbd "M-w") nil))
+(with-eval-after-load 'magit-mode
+  (define-key magit-mode-map (kbd "M-w") nil))
 
 ;; NOTE: this works in terminal, but not with gui, the second once oposite way!
 ;; I-search and query-replace (global-set-key "" 'isearch-forward)
@@ -396,10 +443,12 @@ buffer. For more information, see the documentation of `query-replace-regexp'"
              (define-key isearch-mode-map (kbd "C-n") 'isearch-repeat-forward)
              (define-key isearch-mode-map (kbd "C-S-n") 'isearch-repeat-backward))))
 
+(global-set-key (kbd "M-{") 'indent-region)
+
 ;; Goto line:
 (global-set-key (kbd "M-g") 'goto-line)
 ;; Files and buffers:
-(global-set-key (kbd "M-l") 'counsel-locate)
+(global-set-key (kbd "M-l") 'locate)
 (global-set-key (kbd "M-f") 'find-file)
 (global-set-key (kbd "M-F") 'find-file-other-window)
 (global-set-key (kbd "M-R") 'revert-buffer)
@@ -815,11 +864,40 @@ integrated terminal is at least not the best..."
              '(font . "DejaVu Sans Mono-10.5"))
 (load-theme 'monokai t)
 
+;; For now lets try not to add this condition, because it won't work properly if
+;; emacs is demonized.
+(defun mat-console-init ()
+  (interactive)
+  (progn
+    (define-key input-decode-map "\e[1;5C" [(control right)])
+    (define-key input-decode-map "\e[1;5D" [(control left)])
+    (define-key input-decode-map "\e[1;5A" [(control up)])
+    (define-key input-decode-map "\e[1;5B" [(control down)])
+    (define-key input-decode-map "\e[1;5F" [(meta left)])
+
+    ;; HACK: As i only use TTY mode to edit single file with the client so in
+    ;;       TTY we redefine M-k to kill the frame because default key shortcut
+    ;;       was unclickable. We must also define it in this map, not to polute
+    ;;       the original frame.
+    (define-key input-decode-map "M-k" 'delete-frame)
+
+    (keyboard-translate ?\C-t ?\C-c)
+    (keyboard-translate ?\C-c ?\C-t)
+    (keyboard-translate ?\C-x ?\C-y)
+    (keyboard-translate ?\C-y ?\C-x)
+
+    (set-face-background 'default "#000000" (selected-frame))
+    ))
+(add-hook 'tty-setup-hook 'mat-console-init)
+
 (global-hl-line-mode t)
 (set-face-background 'hl-line "#1e1f1c")
 
 (when (display-graphic-p)
   (split-window-horizontally))
+
+(server-start)
+(setq server-port 9292)
 
 ;; Some custom stuff, that it's best not to touch.
 (custom-set-variables
@@ -836,7 +914,7 @@ integrated terminal is at least not the best..."
  '(jdee-server-dir "/home/mateusz/.emacs.d/jdee-server/target")
  '(package-selected-packages
    (quote
-    (org-bullets flx-isearch flx-ido cmake-mode realgud tuareg csharp-mode flycheck-irony elpy visible-mark magit multiple-cursors expand-region highlight-parentheses autopair highlight-operators highlight-numbers dumb-jump flycheck company-irony-c-headers company-irony company auto-complete irony drag-stuff monokai-theme ivy))))
+    (pcre2el dired+ tide edit-server org-bullets flx-isearch flx-ido cmake-mode realgud tuareg csharp-mode flycheck-irony elpy visible-mark magit multiple-cursors expand-region highlight-parentheses autopair highlight-operators highlight-numbers dumb-jump flycheck company-irony-c-headers company-irony company auto-complete irony drag-stuff monokai-theme ivy))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
