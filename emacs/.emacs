@@ -154,8 +154,8 @@
   (setq company-frontends '(company-echo-metadata-frontend
                             company-pseudo-tooltip-unless-just-one-frontend
                             company-preview-frontend))
-  (define-key company-active-map [tab] 'company-select-next-if-tooltip-visible-or-complete-selection)
-  (define-key company-active-map (kbd "TAB") 'company-select-next-if-tooltip-visible-or-complete-selection)
+  (define-key company-active-map [tab] 'company-complete-common-or-cycle)
+  (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
   (define-key company-active-map [backtab] 'company-select-previous)
   (define-key company-active-map (kbd "<S-tab>") 'company-select-previous)
   (define-key company-active-map (kbd "<down>")
@@ -172,13 +172,13 @@
       (execute-kbd-macro (kbd "<left>"))))
   (define-key company-active-map (kbd "<right>")
     (lambda () (interactive)
-      (company-complete-selection)))
+      (company-complete-selection)
+      (execute-kbd-macro (kbd "<right>"))))
 
   (define-key company-active-map (kbd "<C-right>")
     (lambda () (interactive)
       (company-complete-selection)
-      ;(execute-kbd-macro (kbd "<C-right"))
-      )))
+      (execute-kbd-macro (kbd "<C-right")))))
 
 (company-ac-setup)
 

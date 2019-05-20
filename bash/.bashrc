@@ -1,22 +1,17 @@
 # .bashrc
 
-
-# Custom LS colors
-# LS_COLORS="no=00:fi=00:di=01;94:ln=04;00:pi=40;33:so=40;33:bd=40;33;01:cd=40;33;01:ex=00;93:*.gz=01;95:*.bz2=01;95:*.bz=01;95:*.tz=01;95:*.rpm=01;95:*.zip=01;95:*.cpio=01;95:*.t=93:*.pm=00;36:*.pod=00;36:*.conf=00;33:*.ini=00;33:*.off=00;9"
-# export LS_COLORS
-
-
 [ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
 
 source ~/.config/user-dirs.dirs
 
 ## Alias:
 alias dir='ls --color'
-alias ls='ls --color'
-alias ll='ls -l --color'
-alias la='ls -a --color'
+alias ls='ls --color -h'
+alias ll='ls -l --color -h'
+alias la='ls -a --color -h'
 alias gs='git status'
 alias gl='git log --oneline --branches --graph'
+alias myip="ip address | grep -e 'inet\(.*\)\(enp0s25\|wlan0\)' | cut -d' ' -f6 | sed \"s/\/24//g\""
 alias pushd='pushd > /dev/null'
 alias popd='popd > /dev/null'
 alias cls='clear'
@@ -40,14 +35,16 @@ alias .........='cd ../../../../../../../..'
 alias ..........='cd ../../../../../../../../..'
 alias ...........='cd ../../../../../../../../../..'
 
+# TODO: Get rid of this.
+alias fmfdb='sqlcmd -S localhost,1433 -U SA -P 9d4!Y@fQ2HH'
 
 ## Display current directory:
 export PS1='\e[92;1m $(dir_prefix)$(p=${PWD#$HOME};((${#p}>28)) && echo "...${p:(-25)}" || echo $p) $(git_prompt)\e[0m\e[90;1mʎ\e[0m '
 export PS2=' \e[90;1m  ┋\e[0m '
 
 export BROWSER="firefox"
-export EMAIL="mateuszd7@gmail.com"
-export NAME="Mateusz Dudzinski"
+export USER_EMAIL="mateuszd7@gmail.com"
+export USER_NAME="Mateusz Dudzinski"
 
 # TODO: Differ the defaul deamon and the one-window deamon. Visual should fire
 #       framed emacs if it exists, and editor should start alternative deamon in
@@ -67,6 +64,16 @@ complete -cf sudo
 shopt -s checkwinsize
 shopt -s expand_aliases
 shopt -s histappend
+
+# This thing is _great_. Taken from: github.com/hrs/dotfiles
+function countpage() {
+    pdf2dsc "$1" /dev/stdout | grep "Pages" | sed s/[^0-9]//g
+}
+
+# Display a path variable in a more pleasent way.
+function path() {
+    echo $PATH | tr ':' '\n'
+}
 
 # Display currently used colors in the terminal.
 colors() {
@@ -96,12 +103,6 @@ colors() {
     done
 }
 
-
-# Display a path variable in a more pleasent way.
-function path() {
-    echo $PATH | tr ':' '\n'
-}
-
 # Used by the propt.
 dir_prefix() {
     if [ "${PWD##/home/}" != "${PWD}" ]; then
@@ -123,11 +124,26 @@ git_prompt()
     fi
 }
 
+man() {
+    LESS_TERMCAP_md=$'\e[01;32m' \
+    LESS_TERMCAP_me=$'\e[0m' \
+    LESS_TERMCAP_se=$'\e[0m' \
+    LESS_TERMCAP_so=$'\e[30;47m' \
+    LESS_TERMCAP_ue=$'\e[0m' \
+    LESS_TERMCAP_us=$'\e[01;33m' \
+    command man "$@"
+}
+
 repeat_util_fail()
 {
     while [ $? -eq 0 ]; do
         $@
     done
+}
+
+editor-wrapper()
+{
+    emacsclient -nw --eval "(mat-console-init)" $@
 }
 
 is_std_c()
@@ -160,7 +176,7 @@ extract () {
 }
 
 # Clear the system cache
-clear_cache()
+clear-cache()
 {
     sudo /bin/sh -c "free && sudo echo 3 > /proc/sys/vm/drop_caches && free"
 }
