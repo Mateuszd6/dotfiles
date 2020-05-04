@@ -1,0 +1,2 @@
+#!/bin/sh
+st -e sh -c "echo -e '\e]2;Mail\a' && neomutt"
