@@ -324,7 +324,10 @@ instead of yank command."
 (global-set-key (kbd "<C-prior>") 'switch-to-prev-buffer)
 (global-set-key (kbd "<C-next>") 'switch-to-next-buffer)
 
-(use-package magit)
+(use-package magit
+  :bind (:map with-editor-mode-map
+              ("M-c" . with-editor-finish)
+              ("M-k" . with-editor-cancel)))
 (global-set-key (kbd "M-g") 'magit-status)
 
 (with-eval-after-load 'magit-mode
