@@ -209,17 +209,12 @@ other, future frames."
         minions-mode-line-delimiters '("" . ""))
   (minions-mode 1))
 
-;; (add-hook 'prog-mode-hook 'linum-mode) ; TODO: Try to live without it.
-(setq linum-format "%d ")
-(set-fringe-mode '(4 . 4)) ; Remove fringe.
+;; I've learnt to live without line numbers.
+;; (add-hook 'prog-mode-hook 'linum-mode)
+;; (setq linum-format "%d ")
 
 (set-face-attribute 'visible-mark-active nil :background "#00FF00")
 (set-cursor-color "#f6f6f0")
-
-(use-package diff-hl
-  :config
-  (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
-  (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode))
 
 ;; Bright-red TODOs:
 (setq fixme-modes '(c-mode c++-mode objc-mode emacs-lisp-mode shell-mode python-mode
