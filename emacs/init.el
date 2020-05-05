@@ -55,6 +55,10 @@
 (delete-selection-mode t)
 (transient-mark-mode 0)
 
+;; Disable *Messages* buffer
+(setq-default message-log-max nil)
+(kill-buffer "*Messages*")
+
 (use-package visible-mark)
 (global-visible-mark-mode t)
 
@@ -151,7 +155,7 @@
 ;; LOOK AND FEEL
 ;;
 (setq hrs/default-font "DejaVu Sans Mono")
-(setq hrs/default-font-size 10.5)
+(setq hrs/default-font-size 9.5)
 (setq hrs/current-font-size hrs/default-font-size)
 
 (setq hrs/font-change-increment 0.5)
@@ -324,6 +328,8 @@ instead of yank command."
 (global-set-key (kbd "M-w") 'other-window)
 (global-set-key (kbd "<C-prior>") 'switch-to-prev-buffer)
 (global-set-key (kbd "<C-next>") 'switch-to-next-buffer)
+
+(use-package magit)
 (global-set-key (kbd "M-g") 'magit-status)
 
 (with-eval-after-load 'magit-mode
@@ -359,9 +365,18 @@ instead of yank command."
 
 (global-set-key (kbd "C-k") 'kill-line)
 (global-set-key (kbd "M-k") 'kill-this-buffer)
-(global-set-key (kbd "M-K") 'kill-buffer-and-window)
 
-;; NOTE: It works because I never ever split windows, so there are always two on my screen.
+;; This hack is used to kill client instances. In main window server-edit closes
+;; the file and it is fine, becasue frame can't be deleted. In the client frame
+;; file is either edited, when the edited file is opened and if for any reason
+;; there is not file (e.g.: emacsclient was invoked with -f but no file), client
+;; window gets killed.
+(global-set-key (kbd "M-K") (lambda ()
+                              (interactive)
+                              (server-edit)
+                              (delete-frame)))
+
+;; I never ever split windows, so there are always two on my screen.
 (use-package buffer-move)
 (defun md/swap-buffers ()
   (interactive)

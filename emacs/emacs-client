@@ -1,0 +1,8 @@
+#!/bin/sh
+
+pidof emacs &> /dev/null
+if [ $? -eq 0 ]; then
+    emacsclient -c $@
+else
+    emacs $@
+fi
