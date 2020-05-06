@@ -1,0 +1,44 @@
+# A lot of this great stuff comes (as usual) from: github.com/hrs/dotfiles
+[user]
+        email = dudzinskimat@outlook.com
+        name = Mateusz Dudzinski
+        signingkey = 2EC45028A4B3F6B9FD026AC12A0F61E85118D104
+
+[alias]
+        aa = add --all
+        amend = commit --amend
+        cm = commit
+        br = branch
+        ch = checkout
+        di = diff --cached
+        hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+        lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+        st = status -sb
+
+[color]
+        ui = true
+[color "diff"]
+       meta = bold cyan
+[color "grep"]
+       filename = magenta
+       match = bold red
+       linenumber = bold blue
+
+[core]
+        pager = diff-so-fancy | less --tabs=4 -RFX
+
+[fetch]
+        prune = true
+
+[grep]
+        linenumber = true
+
+[push]
+        default = current
+        followTags = true
+
+[rebase]
+        autosquash = true
+
+[github]
+        user = mateuszd6

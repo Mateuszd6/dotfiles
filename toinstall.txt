@@ -1,0 +1,7 @@
+clang-format # if you want t oformat files.
+diff-so-fancy # for git
+emacs # obviosly
+gpg # obviosly
+neomutt # for mail
+spm # for managing passwords (TODO.)
+tra # translate stuff via google from console.

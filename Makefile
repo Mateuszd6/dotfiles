@@ -1,10 +1,11 @@
 .PHONY: all init update \
+		bash update-bash \
 		emacs update-emacs
 
 #
 # Install dotfiles
 #
-all: init emacs
+all: init bash emacs
 
 init:
 	rm -rf tempdir
@@ -13,6 +14,8 @@ init:
 	mkdir -p old-dotfiles
 	mkdir -p $(HOME)/.local
 	mkdir -p $(HOME)/.local/bin
+
+bash: init
 
 emacs: init
 	-mv -f $(HOME)/.emacs.d old-dotfiles/.emacs.d
@@ -46,7 +49,10 @@ emacs: init
 #
 # Update dotfiles
 #
-update: update-emacs
+update: update-bash update-emacs
+
+update-bash:
+	cp $(HOME)/.bashrc ./bash/bashrc
 
 update-emacs:
 	cp $(HOME)/.emacs.d/init.el ./emacs/init.el
