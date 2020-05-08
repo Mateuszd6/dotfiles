@@ -16,6 +16,10 @@ init:
 	mkdir -p $(HOME)/.local/bin
 
 bash: init
+	-mv -f $(HOME)/.bashrc old-dotfiles/
+	-mv -f $(HOME)/.bash_profile old-dotfiles/
+	cp ./bash/bashrc $(HOME)/.bashrc
+	cp ./bash/bash_profile $(HOME)/.bash_profile
 
 emacs: init
 	-mv -f $(HOME)/.emacs.d old-dotfiles/.emacs.d
@@ -53,6 +57,7 @@ update: update-bash update-emacs
 
 update-bash:
 	cp $(HOME)/.bashrc ./bash/bashrc
+	cp $(HOME)/.bash_profile ./bash/bash_profile
 
 update-emacs:
 	cp $(HOME)/.emacs.d/init.el ./emacs/init.el

@@ -707,6 +707,9 @@ instead of yank command."
 ;;
 (use-package org-bullets)
 
+;; Start week on monady
+(setq calendar-week-start-day 1)
+
 (defun md/org-no-increasing-height ()
   (dolist (face '(org-level-1
                   org-level-2
@@ -746,14 +749,40 @@ instead of yank command."
 ;; dead.
 (add-hook 'org-capture-mode-hook
           (lambda ()
-            (if org-capture-mode
-                (delete-other-windows))))
+            (progn
+              (define-key org-capture-mode-map "\M-c" 'org-capture-finalize)
+              (define-key org-capture-mode-map "\M-C" 'org-capture-refile)
+              (define-key org-capture-mode-map "\M-k" 'org-capture-kill)
+              (if org-capture-mode (delete-other-windows)))))
+
+(setq org-capture-templates
+      '(("t" "Todo" entry (file "~/work/orgzly/todo-new.org")
+         "* TODO %? %^G\n %i")
+        ("n" "Note" entry (file "~/work/orgzly/notes-new.org")
+         "* %? %^G\n %i")
+        ("b" "Bookmark" entry (file "~/work/orgzly/notes-new.org")
+         "* %? :bookmark:%^G\n  %i\n  [[%x]]\n")
+         ))
 
 (defun md/org-capture-finish-kill-client ()
   (let ((key (plist-get org-capture-plist :key))
         (desc (plist-get org-capture-plist :description)))
     (delete-frame)))
 (add-hook 'org-capture-after-finalize-hook 'md/org-capture-finish-kill-client)
+
+;; Delete other windows, when resized and there is not much space left.
+;; Values on my machines:
+;; 679 (/1362)
+;; 956 (/1916)
+(defun delete-other-windows-when-it-gets-small (frame)
+  (when (/= (window-pixel-width-before-size-change (frame-root-window frame))
+            (window-pixel-width (frame-root-window frame)))
+    (progn
+      (if (<= (window-pixel-width (frame-root-window frame)) 679)
+          (delete-other-windows))
+      ; (message "DING %d" (window-pixel-width (frame-root-window frame)))
+      )))
+(add-hook 'window-size-change-functions 'delete-other-windows-when-it-gets-small)
 
 ;; Emacs as the Command Center of the Universe
 (server-start)
@@ -768,7 +797,8 @@ instead of yank command."
  '(diredp-compressed-file-suffix ((t (:foreground "cyan"))))
  '(diredp-dir-name ((t (:foreground "#7474FFFFFFFF"))))
  '(diredp-omit-file-name ((t (:inherit diredp-ignored-file-name))))
- '(linum ((t (:inherit default :background "#272822" :foreground "#5b5c57" :underline nil)))))
+ '(linum ((t (:inherit default :background "#272822" :foreground "#5b5c57" :underline nil))))
+ '(org-block ((t (:background "#272822" :foreground "#F8F8F0")))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

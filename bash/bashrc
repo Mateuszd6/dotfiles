@@ -16,9 +16,9 @@ alias grep='grep --color'
 alias less='less -R'
 alias mkdir='mkdir -p'
 alias tree='tree -C'
-alias df='df -h'                          # human-readable size
-alias du='du -h'                          # human-readable size
-alias free='free -m'                      # show sizes in MB
+alias df='df -h' # human-readable size
+alias du='du -h' # human-readable size
+alias free='free -m' # show sizes in MB
 alias ed='$EDITOR'
 alias vis='$VISUAL'
 alias mutt='neomutt'
@@ -33,10 +33,12 @@ alias ........='cd ../../../../../../..'
 alias .........='cd ../../../../../../../..'
 alias ..........='cd ../../../../../../../../..'
 alias ...........='cd ../../../../../../../../../..'
+alias zpp='psql -d zpp'
+alias vg='valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=valgrind.log'
 
 ## Display current directory:
 export PS1='\e[95;1m $(dir_prefix)$(p=${PWD#$HOME};((${#p}>28)) && echo "...${p:(-25)}" || echo $p) $(git_prompt)\e[0m\e[90;1mʎ\e[0m '
-export PS2=' \e[90;1m  ┋\e[0m '
+export PS2=' \e[90;1m   \e[0m '
 
 export BROWSER="firefox"
 export EMAIL="dudzinskimat@outlook.com"
@@ -47,12 +49,11 @@ export LANG="en_US"
 export LC_ALL="en_US.UTF-8"
 export LC_CTYPE="en_US.UTF-8"
 
-# TODO: Differ the defaul deamon and the one-window deamon. Visual should fire
-#       framed emacs if it exists, and editor should start alternative deamon in
-#       the background.
+# Emacs config for the script that hides emacs binary with a script, that
+# starting client or daemon correctly.
+export EDITOR='emacs'
+export VISUAL='emacs'
 export ALTERNATE_EDITOR=""
-export EDITOR='emacsclient'
-export VISUAL='emacsclient'
 
 bind "TAB:menu-complete"
 bind "set show-all-if-ambiguous on"
@@ -63,11 +64,6 @@ complete -cf sudo
 shopt -s checkwinsize
 shopt -s expand_aliases
 shopt -s histappend
-
-# This thing is _great_. Taken from: github.com/hrs/dotfiles
-function countpage() {
-    pdf2dsc "$1" /dev/stdout | grep "Pages" | sed s/[^0-9]//g
-}
 
 # Display a path variable in a more pleasent way.
 function path() {
@@ -102,7 +98,7 @@ colors() {
     done
 }
 
-# Used by the propt.
+# Used by the prompt.
 dir_prefix() {
     if [ "${PWD##/home/}" != "${PWD}" ]; then
         echo -ne "~"
@@ -132,7 +128,7 @@ man() {
     command man "$@"
 }
 
-repeat_util_fail() {
+repeat-util-fail() {
     while [ $? -eq 0 ]; do
         $@
     done
@@ -161,6 +157,16 @@ extract () {
     fi
 }
 
+zipdir () {
+    NORMALIZED=$(echo $1 | sed 's:/*$::') # kil trailing '/'
+    zip -r "${NORMALIZED}.zip" $NORMALIZED
+}
+
+targzdir () {
+    NORMALIZED=$(echo $1 | sed 's:/*$::') # kill trailing '/'
+    tar -zcvf "${NORMALIZED}.tar.gz" $NORMALIZED
+}
+
 # Clear the system cache
 clear-cache() {
     sudo /bin/sh -c "free && sudo echo 3 > /proc/sys/vm/drop_caches && free"
@@ -184,13 +190,10 @@ md-format() {
     echo "formatted $FORMATED_FILES file(s)."
 }
 
-clip() {
+to-clip() {
     if [ $# -ge 1 ] && ([ $1 == '--remove-newlines' ] || [ $1 == '-rm-nl' ]); then
         cat | tr -d '\n' | xclip -sel clip
     else
         cat | xclip -sel clip
     fi
 }
-
-# TODO: Investigate what this is!
-# xhost +local:root > /dev/null 2>&1
