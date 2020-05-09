@@ -5,7 +5,7 @@
 #
 # Install dotfiles
 #
-all: init bash emacs
+all: init bash emacs passwords
 
 init:
 	rm -rf tempdir
@@ -49,6 +49,9 @@ emacs: init
     # Now start emacs which will download everything, byte compile lisp folder
     # and then close automatically.
 	/usr/bin/emacs --eval '(progn (byte-compile-file ".emacs.d/lisp/dired+.el") (byte-compile-file ".emacs.d/lisp/sensible-defaults.el") (kill-emacs))'
+
+passwords: init
+	cp passwords/mdpassmenu $(HOME)/.local/bin
 
 #
 # Update dotfiles
