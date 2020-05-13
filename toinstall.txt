@@ -11,3 +11,6 @@ gpg # obviosly
 neomutt # for mail
 spm # for managing passwords (TODO.)
 tra # translate stuff via google from console.
+
+TODO: dbxcli for syncing stuff!
+TODO: copy capture and agenda into .local/bin

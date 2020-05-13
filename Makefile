@@ -1,11 +1,12 @@
 .PHONY: all init update \
 		bash update-bash \
-		emacs update-emacs
+		emacs update-emacs \
+		scripts
 
 #
 # Install dotfiles
 #
-all: init bash emacs passwords
+all: init bash emacs scripts
 
 init:
 	rm -rf tempdir
@@ -50,8 +51,12 @@ emacs: init
     # and then close automatically.
 	/usr/bin/emacs --eval '(progn (byte-compile-file ".emacs.d/lisp/dired+.el") (byte-compile-file ".emacs.d/lisp/sensible-defaults.el") (kill-emacs))'
 
-passwords: init
-	cp passwords/mdpassmenu $(HOME)/.local/bin
+scripts: init
+	cp scripts/displ-mail $(HOME)/.local/bin
+	cp scripts/agenda.sh $(HOME)/.local/bin
+	cp scripts/capture.sh $(HOME)/.local/bin
+	cp scripts/grep-find-todos $(HOME)/.local/bin
+	cp scripts/mdpassmenu $(HOME)/.local/bin
 
 #
 # Update dotfiles

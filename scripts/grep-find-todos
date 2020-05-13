@@ -1,0 +1,10 @@
+#!/bin/sh
+
+query=`echo $@ | sed 's/ /\\\\|/g'`
+if [ ! -z "$query" ]; then
+    query="\($query\)"
+    query="\([\(][\,a-zA-Z0-9]*${query}[\,a-zA-Z0-9]*[\)]\| [\,a-zA-Z0-9]*${query}[\,a-zA-Z0-9]*\)"
+fi
+
+query="\(TODO${query}\)"
+grep --color --null -InHe "$query" -ir .
