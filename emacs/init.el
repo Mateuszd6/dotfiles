@@ -415,11 +415,11 @@ instead of yank command."
 ;; Commenting and lines blocks:
 (global-set-key (kbd "C-/") 'comment-line)
 
-(global-set-key (kbd "C-.") (lambda ()
+(global-set-key (kbd "M-.") (lambda ()
                               (interactive)
                               (execute-kbd-macro(kbd "->"))))
 
-(global-set-key (kbd "C-,") (lambda ()
+(global-set-key (kbd "M-,") (lambda ()
                               (interactive)
                               (execute-kbd-macro(kbd "<-"))))
 
@@ -433,7 +433,7 @@ instead of yank command."
 (global-set-key (kbd "C-+") 'er/contract-region)
 
 ;; TODO: It is usless, find another binding.
-(global-set-key (kbd "M-c") 'quick-calc)
+(global-set-key (kbd "C-M-c") 'quick-calc)
 
 ;; Multiple cursor support:
 ;; TODO: Find another bindings for them
@@ -604,6 +604,34 @@ instead of yank command."
                    (previous-line 3)
                    (set-buffer-modified-p nil))))))
 
+(defun find-corresponding-file ()
+  "Find the file that corresponds to this one."
+  (interactive)
+  (setq CorrespondingFileName nil)
+  (setq BaseFileName (file-name-sans-extension buffer-file-name))
+  (if (string-match "\\.c" buffer-file-name)
+      (setq CorrespondingFileName (concat BaseFileName ".h")))
+  (if (string-match "\\.h" buffer-file-name)
+      (if (file-exists-p (concat BaseFileName ".c")) (setq CorrespondingFileName (concat BaseFileName ".c"))
+        (setq CorrespondingFileName (concat BaseFileName ".cpp"))))
+  (if (string-match "\\.hin" buffer-file-name)
+      (setq CorrespondingFileName (concat BaseFileName ".cin")))
+  (if (string-match "\\.cin" buffer-file-name)
+      (setq CorrespondingFileName (concat BaseFileName ".hin")))
+  (if (string-match "\\.cpp" buffer-file-name)
+      (setq CorrespondingFileName (concat BaseFileName ".h")))
+  (if CorrespondingFileName (find-file CorrespondingFileName)
+    (error "Unable to find a corresponding file")))
+(defun find-corresponding-file-other-window ()
+  "Find the file that corresponds to this one."
+  (interactive)
+  (find-file-other-window buffer-file-name)
+  (find-corresponding-file)
+  (other-window -1))
+
+(global-set-key (kbd "M-c") 'find-corresponding-file)
+(global-set-key (kbd "M-C") 'find-corresponding-file-other-window)
+
 (add-hook 'c-mode-common-hook 'md/c-mode-common-hook)
 
 ;;
@@ -630,11 +658,12 @@ instead of yank command."
           ("png" . "feh")
           ("tiff" . "feh"))))
 
-(use-package dired-subtree :ensure t
-  :after dired
-  :config
-  (bind-key "<tab>" #'dired-subtree-toggle dired-mode-map)
-  (bind-key "<backtab>" #'dired-subtree-cycle dired-mode-map))
+;; This is cool, but usless.
+;; (use-package dired-subtree :ensure t
+  ;; :after dired
+  ;; :config
+  ;; (bind-key "<tab>" #'dired-subtree-toggle dired-mode-map)
+  ;; (bind-key "<backtab>" #'dired-subtree-cycle dired-mode-map))
 
 (setq dired-dwim-target t)
 (setq dired-clean-up-buffers-too t)
@@ -651,6 +680,8 @@ instead of yank command."
 (define-key dired-mode-map (kbd "<left>") 'md/dired-up-dir)
 (define-key dired-mode-map (kbd "<right>") 'diredp-find-file-reuse-dir-buffer)
 (define-key dired-mode-map (kbd "<return>") 'dired-open-file)
+(define-key dired-mode-map (kbd "<tab>") 'diredp-visit-this-file)
+
 
 (add-hook 'dired-mode-hook
           (lambda()
@@ -718,8 +749,7 @@ instead of yank command."
                   org-level-5))
     (set-face-attribute face nil :weight 'semi-bold :height 1.0)))
 
-(setq org-agenda-start-on-weekday 1) ; Start week on monday.
-(setq org-bullets-bullet-list '(" "))
+(setq org-bullets-bullet-list '("⁕"))
 (setq org-ellipsis " ⤵")
 (setq org-src-fontify-natively t)
 (setq org-src-tab-acts-natively t)
@@ -742,6 +772,53 @@ instead of yank command."
             (local-set-key (kbd "C-M-<up>") 'org-metaup)
             (local-set-key (kbd "C-M-<down>") 'org-metadown)))
 
+(setq org-agenda-start-on-weekday 1) ; Start week on monday.
+(setq org-agenda-files
+      (quote ("~/work/orgzly/TODO(new).org"
+              "~/work/orgzly/TODO.org"
+              "~/work/orgzly/Archive.org"
+              "~/work/orgzly/Notes.org" ; TODO: IDK, probably don't want them here
+              "~/work/orgzly/Notes(new).org")
+              ))
+
+;; Display notes only
+(setq org-agenda-custom-commands
+      '(("n" "Notes" tags "-mynotes" ; I never use this tag, so this would
+                                     ; display everything, which is what I want
+                                     ; here.
+         ((org-agenda-files '("~/work/orgzly/Notes.org"
+                              "~/work/orgzly/Notes(new).org"))
+          (org-agenda-sorting-strategy '(priority-up effort-down)))
+         ("~/work/orgzly/Notes.html")) ; Export file, I probably never used it
+                                       ; anyway.
+        ("b" "Bookmarks" tags "bookmark"
+         ((org-agenda-files '("~/work/orgzly/Notes.org"
+                              "~/work/orgzly/Notes(new).org"))
+          (org-agenda-sorting-strategy '(priority-up effort-down)))
+         ("~/work/orgzly/Bookmarks.html")) ; Export file, I probably never used
+                                           ; it anyway.
+        ))
+
+(add-hook 'org-agenda-mode-hook
+          (lambda ()
+            (interactive)
+            (hl-line-mode 1)
+            (define-key org-agenda-mode-map (kbd "<C-M-return>")
+              'org-agenda-tree-to-indirect-buffer)
+            (define-key org-agenda-mode-map (kbd "<return>")
+              (lambda ()
+                (interactive)
+                (execute-kbd-macro(kbd "<C-M-return> M-w C-x 1"))))
+            (define-key org-agenda-mode-map (kbd "<up>")
+              'org-agenda-previous-item)
+            (define-key org-agenda-mode-map (kbd "<down>")
+              'org-agenda-next-item)
+            (define-key org-agenda-mode-map (kbd "M-<up>")
+              'org-agenda-earlier)
+            (define-key org-agenda-mode-map (kbd "M-<down>")
+              'org-agenda-later)
+            ))
+
 ;; ORG Capture: I don't use org capture from within emacs.
 ;; Instead I spwan a new instance of emacs client, that lives only for me to
 ;; type in the capture. By default it opens a scratch buffer and I don't want
@@ -756,11 +833,11 @@ instead of yank command."
               (if org-capture-mode (delete-other-windows)))))
 
 (setq org-capture-templates
-      '(("t" "Todo" entry (file "~/work/orgzly/todo-new.org")
+      '(("t" "Todo" entry (file "~/work/orgzly/TODO(new).org")
          "* TODO %? %^G\n %i")
-        ("n" "Note" entry (file "~/work/orgzly/notes-new.org")
+        ("n" "Note" entry (file "~/work/orgzly/Notes(new).org")
          "* %? %^G\n %i")
-        ("b" "Bookmark" entry (file "~/work/orgzly/notes-new.org")
+        ("b" "Bookmark" entry (file "~/work/orgzly/Notes(new).org")
          "* %? :bookmark:%^G\n  %i\n  [[%x]]\n")
          ))
 
@@ -778,15 +855,23 @@ instead of yank command."
   (when (/= (window-pixel-width-before-size-change (frame-root-window frame))
             (window-pixel-width (frame-root-window frame)))
     (progn
-      (if (<= (window-pixel-width (frame-root-window frame)) 679)
+      (if (<= (window-pixel-width (frame-root-window frame)) 700)
           (delete-other-windows))
+
+      (if (and
+           (>= (window-pixel-width (frame-root-window frame)) 800)
+           (one-window-p))
+          (split-window-horizontally))
       ; (message "DING %d" (window-pixel-width (frame-root-window frame)))
       )))
 (add-hook 'window-size-change-functions 'delete-other-windows-when-it-gets-small)
 
 ;; Emacs as the Command Center of the Universe
 (server-start)
-(split-window-horizontally)
+
+;; Not necesarry to split window here, because when emacs frame is created, it
+;;gets a resize callback, and the window should get splited anyway.
+;; (split-window-horizontally)
 
 ;; CUSTOM:
 (custom-set-faces

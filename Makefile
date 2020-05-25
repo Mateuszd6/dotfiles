@@ -18,8 +18,10 @@ init:
 
 bash: init
 	-mv -f $(HOME)/.bashrc old-dotfiles/
+	-mv -f $(HOME)/.inputrc old-dotfiles/
 	-mv -f $(HOME)/.bash_profile old-dotfiles/
 	cp ./bash/bashrc $(HOME)/.bashrc
+	cp ./bash/inputrc $(HOME)/.inputrc
 	cp ./bash/bash_profile $(HOME)/.bash_profile
 
 emacs: init
@@ -65,6 +67,7 @@ update: update-bash update-emacs
 
 update-bash:
 	cp $(HOME)/.bashrc ./bash/bashrc
+	cp $(HOME)/.inputrc ./bash/inputrc
 	cp $(HOME)/.bash_profile ./bash/bash_profile
 
 update-emacs:

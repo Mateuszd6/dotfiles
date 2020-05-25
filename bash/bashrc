@@ -172,22 +172,32 @@ clear-cache() {
     sudo /bin/sh -c "free && sudo echo 3 > /proc/sys/vm/drop_caches && free"
 }
 
-# TODO: !
 md-format() {
     FORMATED_FILES=0
-    #
-    for f in *.c *.h *.cpp *.hpp *.cc ./**/*.c ./**/*.h ./**/*.cpp ./**/*.hpp ./**/*.cc; do
+
+    for f in *.c *.h *.cpp *.hpp *.cc; do
         if [ -f $f ] ; then
             read -p "Format file $f? [y/N] " -r
             if [[ $REPLY =~ ^[Yy]$ ]]; then
-                clang-format -style="{BasedOnStyle: mozilla, TabWidth: 4, IndentWidth: 4, BreakBeforeBraces: Allman, ColumnLimit: 80}" $f -i
+                clang-format $f -i
                 FORMATED_FILES=$((FORMATED_FILES+1))
             fi
         fi
     done
-    #
 
-    echo "formatted $FORMATED_FILES file(s)."
+    if [ $# -ge 1 ] && [ $1 == '-r' ]; then
+        for f in ./**/*.c ./**/*.h ./**/*.cpp ./**/*.hpp ./**/*.cc; do
+            if [ -f $f ] ; then
+                read -p "Format file $f? [y/N] " -r
+                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                    clang-format $f -i
+                    FORMATED_FILES=$((FORMATED_FILES+1))
+                fi
+            fi
+        done
+    fi
+
+    echo "$FORMATED_FILES file(s) fromatted."
 }
 
 to-clip() {
