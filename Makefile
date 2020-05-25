@@ -1,12 +1,16 @@
 .PHONY: all init update \
 		bash update-bash \
 		emacs update-emacs \
+		git update-git \
 		scripts
+
 
 #
 # Install dotfiles
 #
-all: init bash emacs scripts
+all :
+	exit 0
+# all: init bash emacs scripts
 
 init:
 	rm -rf tempdir
@@ -53,6 +57,10 @@ emacs: init
     # and then close automatically.
 	/usr/bin/emacs --eval '(progn (byte-compile-file ".emacs.d/lisp/dired+.el") (byte-compile-file ".emacs.d/lisp/sensible-defaults.el") (kill-emacs))'
 
+git: init
+	-mv -f $(HOME)/.gitconfig old-dotfiles/.gitconfig
+	cp ./git/gitconfig $(HOME)/.gitconfig
+
 scripts: init
 	cp scripts/displ-mail $(HOME)/.local/bin
 	cp scripts/agenda.sh $(HOME)/.local/bin
@@ -66,9 +74,12 @@ scripts: init
 update: update-bash update-emacs
 
 update-bash:
-	cp $(HOME)/.bashrc ./bash/bashrc
-	cp $(HOME)/.inputrc ./bash/inputrc
-	cp $(HOME)/.bash_profile ./bash/bash_profile
+	cp -f $(HOME)/.bashrc ./bash/bashrc
+	cp -f $(HOME)/.inputrc ./bash/inputrc
+	cp -f $(HOME)/.bash_profile ./bash/bash_profile
 
 update-emacs:
-	cp $(HOME)/.emacs.d/init.el ./emacs/init.el
+	cp -f $(HOME)/.emacs.d/init.el ./emacs/init.el
+
+update-git:
+	cp -f $(HOME)/.gitconfig ./git/gitconfig

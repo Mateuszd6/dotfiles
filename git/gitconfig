@@ -10,7 +10,8 @@
         cm = commit
         br = branch
         ch = checkout
-        di = diff --cached
+        di = diff
+	    ds = diff --staged
         hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
         lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
         st = status -sb
@@ -18,13 +19,14 @@
 [color]
         ui = true
 [color "diff"]
-       meta = bold cyan
+        meta = bold cyan
 [color "grep"]
-       filename = magenta
-       match = bold red
-       linenumber = bold blue
+        filename = magenta
+        match = bold red
+        linenumber = bold blue
 
 [core]
+        excludesfile = ~/.gitignore
         pager = diff-so-fancy | less --tabs=4 -RFX
 
 [fetch]
