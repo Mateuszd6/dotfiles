@@ -11,7 +11,7 @@
 #
 all :
 	exit 0
-# all: init bash emacs scripts
+# all: init bash git emacs scripts x
 
 init:
 	rm -rf tempdir
@@ -78,7 +78,7 @@ x: init
 #
 # Update dotfiles
 #
-update: update-bash update-emacs
+update: update-bash update-emacs update-git update-x
 
 update-bash:
 	cp -f $(HOME)/.bashrc ./bash/bashrc
