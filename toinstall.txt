@@ -1,16 +1,15 @@
 clang-format # if you want to format files.
 diff-so-fancy # for git
 
-i3wm # obviosly
+dwm # obviosly
 i3lock-fancy # for fancy locking
 feh # to set a wallpaper
-# also assumes that ~/pictures/wallpaper.png exists
+# also assumes that ~/pictures/wallpaper exists
 
 emacs # obviosly
 gpg # obviosly
 neomutt # for mail
 spm # for managing passwords (TODO.)
-tra # translate stuff via google from console.
+trans # translate stuff via google from console.
 
-TODO: dbxcli for syncing stuff!
-TODO: copy capture and agenda into .local/bin
+dbxcli # for syncing stuff like org mode with dropbox

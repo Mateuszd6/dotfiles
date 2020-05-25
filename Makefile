@@ -2,6 +2,7 @@
 		bash update-bash \
 		emacs update-emacs \
 		git update-git \
+		x update-x \
 		scripts
 
 
@@ -68,6 +69,12 @@ scripts: init
 	cp scripts/grep-find-todos $(HOME)/.local/bin
 	cp scripts/mdpassmenu $(HOME)/.local/bin
 
+x: init
+	mv -f $(HOME)/.xinitrc old-dotfiles/xinit
+	mv -f $(HOME)/.Xresources old-dotfiles/Xresources
+	cp x/xinit $(HOME)/.xinitrc
+	cp x/Xresources $(HOME)/.Xresources
+
 #
 # Update dotfiles
 #
@@ -83,3 +90,7 @@ update-emacs:
 
 update-git:
 	cp -f $(HOME)/.gitconfig ./git/gitconfig
+
+update-x:
+	cp -f $(HOME)/.xinitrc ./x/xinit
+	cp -f $(HOME)/.Xresources ./x/Xresources

@@ -1,0 +1,8 @@
+[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+setxkbmap pl
+
+picom -b --backend=glx &
+xautolock -time 5 -locker 'i3lock-fancy' &
+feh --bg-fill ~/pictures/wallpaper --no-fehbg
+dynamic-bar-run 2> /dev/null &
+exec dwm
