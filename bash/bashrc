@@ -3,14 +3,17 @@
 [ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
 
 ## Alias:
-alias dir='ls --color'
-alias ls='ls --color -h'
-alias ll='ls -l --color -h'
-alias la='ls -a --color -h'
-alias myip="ip address | grep 'inet ' | sed 's/^    inet //g' | grep --color '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*'"
-alias cal='cal -3m'
+alias dir='ls --color --group-directories-first'
+alias ls='ls --color -h --group-directories-first'
+alias ll='ls -l --color -h --group-directories-first'
+alias la='ls -a --color -h --group-directories-first'
+alias gs='git status'
+alias gl='git log --oneline --branches --graph'
+alias gd='git diff'
+alias myip="ip address | grep -e 'inet\(.*\)\(enp0s25\|wlan0\)' | cut -d' ' -f6 | sed \"s/\/24//g\""
 alias pushd='pushd > /dev/null'
 alias popd='popd > /dev/null'
+alias cal='cal -3m'
 alias cls='clear'
 alias grep='grep --color'
 alias less='less -R'
@@ -21,8 +24,8 @@ alias du='du -h' # human-readable size
 alias free='free -m' # show sizes in MB
 alias ed='$EDITOR'
 alias vis='$VISUAL'
-alias mutt='neomutt'
-alias tra=trans
+alias tra='trans'
+alias pygmentize='pygmentize -Ostyle=monokai'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
@@ -33,28 +36,26 @@ alias ........='cd ../../../../../../..'
 alias .........='cd ../../../../../../../..'
 alias ..........='cd ../../../../../../../../..'
 alias ...........='cd ../../../../../../../../../..'
-alias zpp='psql -d zpp'
 alias vg='valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=valgrind.log'
 
 ## Display current directory:
-export PS1='\e[95;1m $(dir_prefix)$(p=${PWD#$HOME};((${#p}>28)) && echo "...${p:(-25)}" || echo $p) $(git_prompt)\e[0m\e[90;1mʎ\e[0m '
-export PS2=' \e[90;1m   \e[0m '
+export PS1='\e[92;1m $(dir_prefix)$(p=${PWD#$HOME};((${#p}>28)) && echo "...${p:(-25)}" || echo $p) $(git_prompt)\e[0m\e[90;1m$\e[0m '
+export PS2='     '
 
-export BROWSER="firefox"
 export EMAIL="dudzinskimat@outlook.com"
 export NAME="Mateusz Dudzinski"
+export BROWSER="firefox"
 
-export HISTFILESIZE=20000
-export LANG="en_US"
-export LC_ALL="en_US.UTF-8"
-export LC_CTYPE="en_US.UTF-8"
+# Aliases?
+export USER_EMAIL="$EMAIL"
+export USER_NAME="$NAME"
 
-# Emacs config for the script that hides emacs binary with a script, that
-# starting client or daemon correctly.
-export EDITOR='emacs'
-export VISUAL='emacs'
 export ALTERNATE_EDITOR=""
+export EDITOR='emacsclient -c'
+export VISUAL='emacsclient -c'
 
+# TODO: No idea why when I just puts them in the .inputrc file they do not
+#       work... So I put them here and there, just in case.
 bind "TAB:menu-complete"
 bind "set show-all-if-ambiguous on"
 bind "set menu-complete-display-prefix on"
@@ -107,7 +108,8 @@ dir_prefix() {
 
 # Does nothing if there is no git in the folder. Otherwise prints the name of
 # the current branch. Color is red if there are changes, white otherwise.
-git_prompt() {
+git_prompt()
+{
     log_info=$(git branch 2>/dev/null | grep '^*' | colrm 1 2)
     if [ -n "$log_info" ]; then
         if [ -z "$(git status --porcelain)" ]; then
@@ -128,7 +130,8 @@ man() {
     command man "$@"
 }
 
-repeat-util-fail() {
+repeat_util_fail()
+{
     while [ $? -eq 0 ]; do
         $@
     done
@@ -157,50 +160,44 @@ extract () {
     fi
 }
 
-zipdir () {
-    NORMALIZED=$(echo $1 | sed 's:/*$::') # kil trailing '/'
+zipdir() {
+    NORMALIZED=$(echo $1 | sed 's:/*$::') # kill trialing '/
     zip -r "${NORMALIZED}.zip" $NORMALIZED
 }
 
-targzdir () {
-    NORMALIZED=$(echo $1 | sed 's:/*$::') # kill trailing '/'
+targzdir() {
+    NORMALIZED=$(echo $1 | sed 's:/*$::') # kill trialing '/
     tar -zcvf "${NORMALIZED}.tar.gz" $NORMALIZED
 }
 
+kill-orphans() {
+    sudo pacman -Qtdq | sudo pacman -Rns -
+}
+
 # Clear the system cache
-clear-cache() {
+clear-cache()
+{
     sudo /bin/sh -c "free && sudo echo 3 > /proc/sys/vm/drop_caches && free"
 }
 
-md-format() {
+mateusz-format()
+{
     FORMATED_FILES=0
-
-    for f in *.c *.h *.cpp *.hpp *.cc; do
+    for f in *.c *.h *.cpp *.hpp *.cc ./**/*.c ./**/*.h ./**/*.cpp ./**/*.hpp ./**/*.cc; do
         if [ -f $f ] ; then
             read -p "Format file $f? [y/N] " -r
             if [[ $REPLY =~ ^[Yy]$ ]]; then
-                clang-format $f -i
+                clang-format -style="{BasedOnStyle: mozilla, TabWidth: 4, IndentWidth: 4, BreakBeforeBraces: Allman, ColumnLimit: 80}" $f -i
                 FORMATED_FILES=$((FORMATED_FILES+1))
             fi
         fi
     done
 
-    if [ $# -ge 1 ] && [ $1 == '-r' ]; then
-        for f in ./**/*.c ./**/*.h ./**/*.cpp ./**/*.hpp ./**/*.cc; do
-            if [ -f $f ] ; then
-                read -p "Format file $f? [y/N] " -r
-                if [[ $REPLY =~ ^[Yy]$ ]]; then
-                    clang-format $f -i
-                    FORMATED_FILES=$((FORMATED_FILES+1))
-                fi
-            fi
-        done
-    fi
-
-    echo "$FORMATED_FILES file(s) fromatted."
+    echo "$FORMATED_FILES were formatted."
 }
 
-to-clip() {
+to-clip()
+{
     if [ $# -ge 1 ] && ([ $1 == '--remove-newlines' ] || [ $1 == '-rm-nl' ]); then
         cat | tr -d '\n' | xclip -sel clip
     else

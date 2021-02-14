@@ -10,8 +10,7 @@
 # Install dotfiles
 #
 all :
-	exit 0
-# all: init bash git emacs scripts x
+	@-echo "You _don't_ want to install everything, do you?"
 
 init:
 	rm -rf tempdir
