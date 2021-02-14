@@ -62,11 +62,7 @@ git: init
 	cp ./git/gitconfig $(HOME)/.gitconfig
 
 scripts: init
-	cp scripts/displ-mail $(HOME)/.local/bin
-	cp scripts/agenda.sh $(HOME)/.local/bin
-	cp scripts/capture.sh $(HOME)/.local/bin
-	cp scripts/grep-find-todos $(HOME)/.local/bin
-	cp scripts/mdpassmenu $(HOME)/.local/bin
+	cp scripts/* $(HOME)/.local/bin
 
 # This should install window manager terminal emulator and copy xinit files, so
 # that startx should straight-up work.
@@ -74,12 +70,15 @@ x: init
 	rm -rf dwm-customized
 	rm -rf st-customized
 	rm -rf dynamic-bar
-	git clone https://github.com/Mateuszd6/dwm-customized.git
-	git clone https://github.com/Mateuszd6/st-customized.git
-	git clone https://github.com/Mateuszd6/dynamic-bar.git
+	rm -rf starter
+	git clone git@github.com:Mateuszd6/dwm-customized.git
+	git clone git@github.com:Mateuszd6/st-customized.git
+	git clone git@github.com:Mateuszd6/dynamic-bar.git
+	git clone git@github.com:Mateuszd6/Starter.git ./starter
 	cd dwm-customized && make && sudo make install
 	cd st-customized && make && sudo make install
 	cd dynamic-bar && make && sudo make install
+	cd starter && make && sudo make install
 	mv -f $(HOME)/.xinitrc old-dotfiles/xinit
 	mv -f $(HOME)/.Xresources old-dotfiles/Xresources
 	cp x/xinit $(HOME)/.xinitrc
